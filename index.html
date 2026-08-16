@@ -128,10 +128,11 @@
 
   /* ---------- NAV ---------- */
   .topnav{
-    position:sticky; top:0; z-index:50;
+    position:sticky; top:10px; z-index:50;
     display:flex; justify-content:center;
     padding:14px 0;
     margin-top:14px;
+    min-height:58px;
   }
   .topnav-inner{
     display:flex; gap:2px; align-items:center;
@@ -509,6 +510,49 @@
 
   #yt-holder{position:absolute; width:0; height:0; overflow:hidden;}
 
+
+  /* ---------- ACTIVE NAV + PLAYLIST STACK ---------- */
+  .topnav a.active{position:relative; box-shadow:0 0 18px rgba(124,108,255,.18);}
+  .topnav a.active::after{content:''; position:absolute; left:22%; right:22%; bottom:3px; height:2px; border-radius:99px; background:rgba(255,255,255,.55);}
+  .skill-chip .skill-logo{width:19px; height:19px; object-fit:contain; flex-shrink:0;}
+  .playlist-wrap{margin-top:22px; display:grid; grid-template-columns:minmax(0,1fr); gap:12px;}
+  .playlist-label{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.08em;}
+  .playlist{position:relative; min-height:74px; padding:4px 0 4px 0;}
+  .playlist-card{
+    position:relative; display:flex; align-items:center; gap:12px; width:calc(100% - var(--stack-offset, 0px));
+    min-height:66px; padding:10px 12px; border-radius:13px;
+    background:linear-gradient(135deg,rgba(17,20,30,.98),rgba(12,14,22,.98));
+    border:1px solid var(--panel-border); box-shadow:0 10px 25px -18px #000;
+    cursor:grab; user-select:none; touch-action:none;
+    transform:translateX(var(--x,0)) translateY(var(--y,0)) scale(var(--scale,1));
+    transition:transform .42s var(--ease), border-color .25s, box-shadow .25s, opacity .25s;
+    z-index:var(--z,1); margin-bottom:-42px;
+  }
+  .playlist-card:last-child{margin-bottom:0;}
+  .playlist-card:hover{--x:10px; border-color:rgba(124,108,255,.55); box-shadow:0 16px 30px -18px rgba(124,108,255,.4);}
+  .playlist-card.dragging{opacity:.88; cursor:grabbing; z-index:100; transform:translateX(18px) scale(1.025); border-color:var(--accent-b);}
+  .playlist-card.active{border-color:rgba(43,230,200,.55); box-shadow:0 0 0 1px rgba(43,230,200,.12),0 16px 30px -20px rgba(43,230,200,.25);}
+  .playlist-card .cover{width:46px;height:46px;border-radius:10px;object-fit:cover;flex:0 0 auto;background:#171a24;}
+  .playlist-card .song-main{min-width:0;flex:1;}
+  .playlist-card .song-title{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .playlist-card .song-artist{font-size:11.5px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+  .playlist-card .song-index{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-faint);width:22px;text-align:center;flex:0 0 auto;}
+  .playlist-card .play-mini{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid var(--panel-border);background:rgba(255,255,255,.045);color:var(--text-dim);flex:0 0 auto;}
+  .playlist-card.active .play-mini{background:var(--grad);color:#08090d;border-color:transparent;}
+  .playlist-card .play-mini svg{width:14px;height:14px;}
+  .playlist-hint{font-size:11px;color:var(--text-faint);margin-top:8px;display:flex;gap:7px;align-items:center;}
+  .playlist-hint b{color:var(--text-dim);font-weight:600;}
+  .playlist-empty{font-size:12px;color:var(--text-faint);padding:12px;border:1px dashed var(--panel-border);border-radius:12px;}
+  .music-actions{display:flex;align-items:center;gap:8px;margin-top:10px;}
+  .music-nav-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.045);border:1px solid var(--panel-border);color:var(--text-dim);display:flex;align-items:center;justify-content:center;transition:.2s var(--ease);}
+  .music-nav-btn:hover{color:var(--text);border-color:var(--accent-a);transform:translateY(-2px);}
+  .music-nav-btn svg{width:15px;height:15px;}
+  .progress-click{cursor:pointer;}
+  @media (max-width:720px){
+    .playlist-card{width:100%;}
+    .playlist-card:hover{--x:5px;}
+  }
+
   @media (max-width:720px){
     .projects-grid{grid-template-columns:1fr;}
     .contact-grid{grid-template-columns:1fr;}
@@ -617,16 +661,20 @@
 
       <div class="music-card">
         <div class="album-art" id="albumArt">
-          <img id="albumImg" src="https://img.youtube.com/vi/v_gttlXZTVI/hqdefault.jpg" alt="Ảnh bìa bài hát Ta Có Nên - Bray">
+          <img id="albumImg" src="https://img.youtube.com/vi/v_gttlXZTVI/hqdefault.jpg" alt="Ảnh bìa bài hát">
         </div>
         <div class="music-info">
           <div class="music-eyebrow"><span class="eq" id="eq"><i></i><i></i><i></i><i></i></span> Đang phát trên portfolio</div>
-          <div class="music-title">Ta Có Nên</div>
-          <div class="music-artist">Bray (B Ray) · Prod. Jurrivh</div>
+          <div class="music-title" id="musicTitle">Ta Có Nên</div>
+          <div class="music-artist" id="musicArtist">Bray (B Ray) · Prod. Jurrivh</div>
           <div class="music-progress">
             <span id="curTime">0:00</span>
-            <div class="bar"><i id="progBar"></i></div>
+            <div class="bar progress-click" id="progressTrack" title="Bấm để tua"><i id="progBar"></i></div>
             <span id="durTime">0:00</span>
+          </div>
+          <div class="music-actions">
+            <button class="music-nav-btn" id="prevBtn" title="Bài trước"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 20-10-8 10-8v16ZM5 5v14"/></svg></button>
+            <button class="music-nav-btn" id="nextBtn" title="Bài tiếp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 4 10 8-10 8V4ZM19 5v14"/></svg></button>
           </div>
         </div>
         <div class="music-controls">
@@ -634,6 +682,11 @@
             <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg>
           </button>
         </div>
+      </div>
+      <div class="playlist-wrap">
+        <div class="playlist-label">Playlist · kéo để đổi thứ tự</div>
+        <div class="playlist" id="playlist"></div>
+        <div class="playlist-hint">↕ <span><b>Kéo một bài lên bài khác</b> để đổi vị trí. Thứ tự này chỉ tồn tại trong phiên hiện tại.</span></div>
       </div>
       <div id="yt-holder"><div id="yt-player"></div></div>
 
@@ -700,15 +753,15 @@
           <div class="skill-group-label">Ngôn ngữ &amp; giao diện</div>
           <div class="skill-row">
             <div class="skill-chip" style="--skill-color:#E44D26;">
-              <svg viewBox="0 0 24 24" fill="#E44D26"><path d="M3.5 2h17l-1.55 17.4L12 22 5.05 19.4 3.5 2Zm14.8 4.1H7.4l.2 2.2h10.2l-.6 6.6-5.2 1.5-5.2-1.5-.35-3.9h2.2l.18 2 3.17.9 3.17-.9.3-3.5H6.1L5.5 3.9h13l-.2 2.2Z"/></svg>
+              <img class="skill-logo" src="https://cdn.simpleicons.org/html5/E44D26" alt="HTML5" loading="lazy">
               <span>HTML5</span>
             </div>
             <div class="skill-chip" style="--skill-color:#2965F1;">
-              <svg viewBox="0 0 24 24" fill="#2965F1"><path d="M3.5 2h17l-1.55 17.4L12 22 5.05 19.4 3.5 2Zm3.65 4.1.2 2.2h9.2l-.2 2.15H8.05l.2 2.15h8.2l-.4 4.5-4.05 1.15-4.05-1.15-.25-2.9H5.5l.45 5.1 6.05 1.7 6.05-1.7.85-9.6H7.15l-.2-2.2h10.9l.2-2.2H6.15Z"/></svg>
+              <img class="skill-logo" src="https://cdn.simpleicons.org/css3/2965F1" alt="CSS3" loading="lazy">
               <span>CSS3</span>
             </div>
             <div class="skill-chip" style="--skill-color:#F0DB4F;">
-              <svg viewBox="0 0 24 24" fill="#F0DB4F"><path d="M2 2h20v20H2V2Zm10.7 15.4c.35.7 1 1.28 2.15 1.28 1 0 1.6-.5 1.6-1.2 0-.83-.62-1.13-1.67-1.6l-.57-.24c-1.65-.7-2.75-1.58-2.75-3.45 0-1.72 1.3-3.02 3.35-3.02 1.45 0 2.5.5 3.25 1.85l-1.78 1.14c-.4-.7-.83-.98-1.47-.98-.67 0-1.1.42-1.1.98 0 .68.43.96 1.4 1.38l.57.24c1.95.83 3.05 1.68 3.05 3.6 0 2.06-1.62 3.2-3.8 3.2-2.13 0-3.5-1-4.18-2.35l1.85-1.03Zm-8.03.18c.35.62.66 1.15 1.42 1.15.73 0 1.19-.29 1.19-1.4V9.1h2.28v8.28c0 2.36-1.38 3.43-3.4 3.43-1.82 0-2.87-.94-3.4-2.08l1.9-1.16Z"/></svg>
+              <img class="skill-logo" src="https://cdn.simpleicons.org/javascript/F0DB4F" alt="JavaScript" loading="lazy">
               <span>JavaScript</span>
             </div>
             <div class="skill-chip" style="--skill-color:#61DAFB;">
@@ -716,7 +769,7 @@
               <span>React</span>
             </div>
             <div class="skill-chip" style="--skill-color:#68A063;">
-              <svg viewBox="0 0 24 24" fill="#68A063"><path d="M12 2a10 10 0 0 0-10 10c0 5.5 4.5 10 10 10s10-4.5 10-10A10 10 0 0 0 12 2zm1 14.5h-2v-5h2v5zm0-7h-2V7h2v2.5z"/></svg>
+              <img class="skill-logo" src="https://cdn.simpleicons.org/nodedotjs/68A063" alt="Node.js" loading="lazy">
               <span>Node.js</span>
             </div>
           </div>
@@ -725,11 +778,11 @@
           <div class="skill-group-label">Cơ sở dữ liệu</div>
           <div class="skill-row">
             <div class="skill-chip" style="--skill-color:#47A248;">
-              <svg viewBox="0 0 24 24" fill="#47A248"><path d="M12.01 2s3.6 3.6 3.98 8.65c.25 3.35-.94 5.63-2.24 7.05-.2-.94-.55-2.44-1.42-3.4-1.7-1.86-1.5-4.6-1.02-6.16-1.3 1.7-2.1 4.05-1.55 6.9.3 1.55 1.1 2.75 1.1 2.75s-.13 1.35.15 3.26h-.9c-.14-1.15-.28-1.6-.28-1.6-3.55-1.15-5-4.15-4.7-7.55C5.63 8.1 12.01 2 12.01 2Z"/></svg>
+              <img class="skill-logo" src="https://cdn.simpleicons.org/mongodb/47A248" alt="MongoDB" loading="lazy">
               <span>MongoDB</span>
             </div>
             <div class="skill-chip" style="--skill-color:#336791;">
-              <svg viewBox="0 0 24 24" fill="#336791"><path d="M17.3 2.2c-2.1-.2-4 .5-5.3 1.7-1.2-.3-2.5-.3-3.7.2C5.2 5.2 3.4 8.7 4 12.4c.4 2.6 1.8 5.5 3.7 6.9.6.45 1.25.6 1.8.4.3-.1.5-.35.6-.7.15.05.3.05.45.05.85 0 1.6-.4 2.1-1.05.5.5 1.15.85 1.9.85.35 0 .7-.1 1-.25.1.55.5.95 1.05 1 .7.05 1.35-.5 1.6-1.3.5-1.55.5-3.85.2-5.5 1.15-.65 1.9-1.85 1.9-3.3 0-1.1-.45-2.05-1.15-2.7.3-1.65-.15-3.35-1.85-4.6Z"/></svg>
+              <img class="skill-logo" src="https://cdn.simpleicons.org/postgresql/336791" alt="PostgreSQL" loading="lazy">
               <span>PostgreSQL</span>
             </div>
           </div>
@@ -1093,78 +1146,300 @@ setInterval(()=>{
   document.getElementById('uptime').textContent = `${h}:${m}:${s}`;
 }, 1000);
 
-/* ============ YOUTUBE PLAYER & MUSIC TIME ============ */
-let ytPlayer, ytReady=false;
+/* ============ YOUTUBE PLAYER & MUSIC PLAYLIST ============ */
+/*
+  ========================= CHỈ BẠN SỬA PHẦN NÀY =========================
+  Muốn thêm bài: copy 1 object bên dưới rồi đổi title / artist / videoId.
+  Người truy cập website KHÔNG có nút thêm/xóa/sửa bài.
+  Thứ tự kéo trên giao diện chỉ là thứ tự tạm thời của phiên đó.
+*/
+const playlist = [
+  {
+    title: 'Ta Có Nên',
+    artist: 'Bray (B Ray) · Prod. Jurrivh',
+    videoId: 'v_gttlXZTVI'
+  }
+
+  // Ví dụ thêm bài mới:
+  // ,{
+  //   title: 'Tên bài hát',
+  //   artist: 'Tên nghệ sĩ',
+  //   videoId: 'ID_VIDEO_YOUTUBE'
+  // }
+];
+
+let currentSong = 0;
+let ytPlayer = null;
+let ytReady = false;
+let dragIndex = null;
+
 const playBtn = document.getElementById('playBtn');
 const playIcon = document.getElementById('playIcon');
 const eq = document.getElementById('eq');
 const album = document.getElementById('albumArt');
+const albumImg = document.getElementById('albumImg');
 const curTimeEl = document.getElementById('curTime');
 const durTimeEl = document.getElementById('durTime');
 const progBarEl = document.getElementById('progBar');
+const progressTrack = document.getElementById('progressTrack');
+const musicTitle = document.getElementById('musicTitle');
+const musicArtist = document.getElementById('musicArtist');
+const playlistEl = document.getElementById('playlist');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
 
 function formatTime(sec){
-  if(!sec || isNaN(sec)) return "0:00";
+  if(!sec || isNaN(sec)) return '0:00';
   const m = Math.floor(sec / 60);
   const s = Math.floor(sec % 60);
   return `${m}:${s < 10 ? '0' : ''}${s}`;
 }
 
+function updateMusicInfo(){
+  const song = playlist[currentSong];
+  if(!song) return;
+  musicTitle.textContent = song.title;
+  musicArtist.textContent = song.artist;
+  albumImg.src = `https://img.youtube.com/vi/${song.videoId}/hqdefault.jpg`;
+  albumImg.alt = `Ảnh bìa ${song.title}`;
+  curTimeEl.textContent = '0:00';
+  durTimeEl.textContent = '0:00';
+  progBarEl.style.width = '0%';
+}
+
+function renderPlaylist(){
+  playlistEl.innerHTML = '';
+  if(!playlist.length){
+    playlistEl.innerHTML = '<div class="playlist-empty">Playlist đang trống.</div>';
+    return;
+  }
+
+  playlist.forEach((song, index)=>{
+    const card = document.createElement('div');
+    card.className = 'playlist-card' + (index === currentSong ? ' active' : '');
+    card.draggable = true;
+    card.dataset.index = index;
+    card.style.setProperty('--z', String(playlist.length - index));
+    card.style.setProperty('--stack-offset', `${Math.min(index * 0, 0)}px`);
+
+    card.innerHTML = `
+      <div class="song-index">${String(index + 1).padStart(2,'0')}</div>
+      <img class="cover" src="https://img.youtube.com/vi/${encodeURIComponent(song.videoId)}/mqdefault.jpg" alt="" loading="lazy">
+      <div class="song-main">
+        <div class="song-title"></div>
+        <div class="song-artist"></div>
+      </div>
+      <button class="play-mini" type="button" title="Phát bài này">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg>
+      </button>
+    `;
+    card.querySelector('.song-title').textContent = song.title;
+    card.querySelector('.song-artist').textContent = song.artist;
+
+    card.addEventListener('click', (e)=>{
+      if(e.target.closest('.play-mini') || e.target === card || e.target.closest('.song-main') || e.target.closest('.cover')){
+        playSong(index, true);
+      }
+    });
+
+    card.addEventListener('dragstart', ()=>{
+      dragIndex = index;
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend', ()=>{
+      dragIndex = null;
+      card.classList.remove('dragging');
+      renderPlaylist();
+    });
+    card.addEventListener('dragover', (e)=>{
+      e.preventDefault();
+      if(dragIndex === null || dragIndex === index) return;
+      card.style.transform = 'translateX(12px) translateY(-5px) scale(1.02)';
+    });
+    card.addEventListener('dragleave', ()=>{
+      if(!card.classList.contains('dragging')) card.style.transform = '';
+    });
+    card.addEventListener('drop', (e)=>{
+      e.preventDefault();
+      if(dragIndex === null || dragIndex === index) return;
+      const moved = playlist.splice(dragIndex, 1)[0];
+      playlist.splice(index, 0, moved);
+      if(currentSong === dragIndex) currentSong = index;
+      else if(dragIndex < currentSong && index >= currentSong) currentSong--;
+      else if(dragIndex > currentSong && index <= currentSong) currentSong++;
+      dragIndex = null;
+      renderPlaylist();
+    });
+
+    playlistEl.appendChild(card);
+  });
+}
+
+function playSong(index, autoplay=false){
+  if(!playlist.length) return;
+  currentSong = (index + playlist.length) % playlist.length;
+  updateMusicInfo();
+  renderPlaylist();
+
+  if(ytReady && ytPlayer){
+    ytPlayer.loadVideoById(playlist[currentSong].videoId);
+    if(!autoplay) ytPlayer.pauseVideo();
+  }
+}
+
+function playCurrent(){
+  if(!ytReady || !ytPlayer) return;
+  ytPlayer.playVideo();
+  playIcon.innerHTML = '<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>';
+  eq.classList.add('playing');
+  album.classList.add('spinning');
+}
+
+function pauseCurrent(){
+  if(!ytReady || !ytPlayer) return;
+  ytPlayer.pauseVideo();
+  playIcon.innerHTML = '<path d="M8 5v14l11-7Z"/>';
+  eq.classList.remove('playing');
+  album.classList.remove('spinning');
+}
+
+function nextSong(){
+  playSong(currentSong + 1, true);
+}
+
+function prevSong(){
+  playSong(currentSong - 1, true);
+}
+
 window.onYouTubeIframeAPIReady = function(){
   ytPlayer = new YT.Player('yt-player', {
-    height:'0', width:'0', videoId:'v_gttlXZTVI',
-    playerVars:{ 'playsinline':1, 'rel':0 },
-    events:{ 
-      'onReady': ()=>{ 
-        ytReady=true; 
+    height:'0',
+    width:'0',
+    videoId: playlist[0]?.videoId || '',
+    playerVars:{playsinline:1, rel:0, controls:0},
+    events:{
+      onReady:()=>{
+        ytReady = true;
+        updateMusicInfo();
+        renderPlaylist();
       },
-      'onStateChange': (e)=>{
+      onStateChange:(e)=>{
+        if(e.data === YT.PlayerState.PLAYING){
+          playIcon.innerHTML = '<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>';
+          eq.classList.add('playing');
+          album.classList.add('spinning');
+        }
+        if(e.data === YT.PlayerState.PAUSED){
+          pauseCurrent();
+        }
         if(e.data === YT.PlayerState.ENDED){
-          playIcon.innerHTML = '<path d="M8 5v14l11-7Z"/>';
           eq.classList.remove('playing');
           album.classList.remove('spinning');
-          progBarEl.style.width = '0%';
-          curTimeEl.textContent = '0:00';
+          nextSong();
         }
       }
     }
   });
 };
 
+playBtn.addEventListener('click', ()=>{
+  if(!ytReady || !ytPlayer) return;
+  const state = ytPlayer.getPlayerState();
+  if(state === YT.PlayerState.PLAYING) pauseCurrent();
+  else playCurrent();
+});
+
+nextBtn.addEventListener('click', nextSong);
+prevBtn.addEventListener('click', prevSong);
+
+progressTrack.addEventListener('click', (e)=>{
+  if(!ytReady || !ytPlayer) return;
+  const rect = progressTrack.getBoundingClientRect();
+  const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  const dur = ytPlayer.getDuration();
+  if(dur > 0) ytPlayer.seekTo(dur * ratio, true);
+});
+
 setInterval(()=>{
   if(ytReady && ytPlayer && typeof ytPlayer.getCurrentTime === 'function'){
     const state = ytPlayer.getPlayerState();
+    const cur = ytPlayer.getCurrentTime();
+    const dur = ytPlayer.getDuration();
+    curTimeEl.textContent = formatTime(cur);
+    durTimeEl.textContent = formatTime(dur);
+    if(dur > 0) progBarEl.style.width = `${(cur / dur) * 100}%`;
     if(state === YT.PlayerState.PLAYING){
-      const cur = ytPlayer.getCurrentTime();
-      const dur = ytPlayer.getDuration();
-      curTimeEl.textContent = formatTime(cur);
-      durTimeEl.textContent = formatTime(dur);
-      if(dur > 0){
-        progBarEl.style.width = ((cur / dur) * 100) + '%';
-      }
+      eq.classList.add('playing');
+      album.classList.add('spinning');
     }
   }
-}, 500);
+}, 400);
+
+updateMusicInfo();
+renderPlaylist();
 
 const tag = document.createElement('script');
 tag.src = 'https://www.youtube.com/iframe_api';
 document.body.appendChild(tag);
 
-playBtn.addEventListener('click', ()=>{
-  if(!ytReady || !ytPlayer) return;
-  const state = ytPlayer.getPlayerState();
-  if(state === YT.PlayerState.PLAYING){
-    ytPlayer.pauseVideo();
-    playIcon.innerHTML = '<path d="M8 5v14l11-7Z"/>';
-    eq.classList.remove('playing');
-    album.classList.remove('spinning');
-  } else {
-    ytPlayer.playVideo();
-    playIcon.innerHTML = '<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>';
-    eq.classList.add('playing');
-    album.classList.add('spinning');
+/* ============ ACTIVE NAV ON SCROLL - STABLE ============ */
+(function(){
+  const links = [...document.querySelectorAll('[data-nav]')];
+  const sections = links.map(link => document.querySelector(link.getAttribute('href'))).filter(Boolean);
+  let activeId = sections[0]?.id || null;
+  let ticking = false;
+  let clickLockUntil = 0;
+
+  function setActive(id){
+    if(!id || id === activeId) return;
+    activeId = id;
+    links.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+    });
   }
-});
+
+  function updateActive(){
+    ticking = false;
+    if(Date.now() < clickLockUntil) return;
+
+    // Một điểm cố định ngay dưới thanh menu. Section nào đi qua điểm này
+    // sẽ trở thành section active. Không dùng IntersectionObserver nên
+    // không bị nhảy qua lại khi nhiều section cùng lúc giao nhau.
+    const probe = 110;
+    let current = sections[0];
+    for(const section of sections){
+      const top = section.getBoundingClientRect().top;
+      if(top <= probe) current = section;
+      else break;
+    }
+    if(current) setActive(current.id);
+  }
+
+  function requestUpdate(){
+    if(!ticking){
+      ticking = true;
+      requestAnimationFrame(updateActive);
+    }
+  }
+
+  window.addEventListener('scroll', requestUpdate, {passive:true});
+  window.addEventListener('resize', requestUpdate, {passive:true});
+
+  links.forEach(link => {
+    link.addEventListener('click', () => {
+      const id = link.getAttribute('href').slice(1);
+      setActive(id);
+      // Giữ mục vừa bấm sáng trong lúc smooth-scroll, tránh nhấp nháy.
+      clickLockUntil = Date.now() + 700;
+      setTimeout(requestUpdate, 720);
+    });
+  });
+
+  if(activeId){
+    links.forEach(link => link.classList.toggle('active', link.getAttribute('href') === `#${activeId}`));
+  }
+  requestUpdate();
+})();
 </script>
 </body>
 </html>
