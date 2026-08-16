@@ -889,8 +889,22 @@ fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
   .then(res=>{
     if(res && res.success && res.data){
       const u = res.data.discord_user || {};
-      if(u.avatar){ avatarImg.src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`; }
-      if(u.banner){ bannerImg.src = `https://cdn.discordapp.com/banners/${u.id}/${u.banner}.png?size=600`; bannerImg.classList.add('loaded'); }
+      
+      // Sửa lỗi lấy avatar Discord (hỗ trợ GIF và PNG)
+      if(u.avatar){ 
+        const ext = u.avatar.startsWith('a_') ? 'gif' : 'png';
+        avatarImg.src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${ext}?size=256`; 
+      } else {
+        avatarImg.src = `https://cdn.discordapp.com/embed/avatars/${(u.discriminator || 0) % 5}.png`;
+      }
+      
+      // Sửa lỗi lấy banner Discord (hỗ trợ GIF và PNG)
+      if(u.banner){ 
+        const bannerExt = u.banner.startsWith('a_') ? 'gif' : 'png';
+        bannerImg.src = `https://cdn.discordapp.com/banners/${u.id}/${u.banner}.${bannerExt}?size=600`; 
+        bannerImg.classList.add('loaded'); 
+      }
+      
       usernameEl.textContent = '@' + (u.username || 'Bynta123');
       const st = res.data.discord_status || 'offline';
       statusDot.classList.remove('online','idle','dnd');
@@ -910,20 +924,59 @@ setInterval(()=>{
   document.getElementById('uptime').textContent = `${h}:${m}:${s}`;
 }, 1000);
 
-/* ============ YOUTUBE PLAYER ============ */
+/* ============ YOUTUBE PLAYER & MUSIC TIME ============ */
 let ytPlayer, ytReady=false;
 const playBtn = document.getElementById('playBtn');
 const playIcon = document.getElementById('playIcon');
 const eq = document.getElementById('eq');
 const album = document.getElementById('albumArt');
+const curTimeEl = document.getElementById('curTime');
+const durTimeEl = document.getElementById('durTime');
+const progBarEl = document.getElementById('progBar');
+
+function formatTime(sec){
+  if(!sec || isNaN(sec)) return "0:00";
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${s < 10 ? '0' : ''}${s}`;
+}
 
 window.onYouTubeIframeAPIReady = function(){
   ytPlayer = new YT.Player('yt-player', {
     height:'0', width:'0', videoId:'v_gttlXZTVI',
     playerVars:{ 'playsinline':1, 'rel':0 },
-    events:{ 'onReady': ()=>{ ytReady=true; } }
+    events:{ 
+      'onReady': ()=>{ 
+        ytReady=true; 
+      },
+      'onStateChange': (e)=>{
+        if(e.data === YT.PlayerState.ENDED){
+          playIcon.innerHTML = '<path d="M8 5v14l11-7Z"/>';
+          eq.classList.remove('playing');
+          album.classList.remove('spinning');
+          progBarEl.style.width = '0%';
+          curTimeEl.textContent = '0:00';
+        }
+      }
+    }
   });
 };
+
+// Cập nhật tiến trình thời gian nhạc chạy liên tục
+setInterval(()=>{
+  if(ytReady && ytPlayer && typeof ytPlayer.getCurrentTime === 'function'){
+    const state = ytPlayer.getPlayerState();
+    if(state === YT.PlayerState.PLAYING){
+      const cur = ytPlayer.getCurrentTime();
+      const dur = ytPlayer.getDuration();
+      curTimeEl.textContent = formatTime(cur);
+      durTimeEl.textContent = formatTime(dur);
+      if(dur > 0){
+        progBarEl.style.width = ((cur / dur) * 100) + '%';
+      }
+    }
+  }
+}, 500);
 
 const tag = document.createElement('script');
 tag.src = 'https://www.youtube.com/iframe_api';
@@ -932,7 +985,7 @@ document.body.appendChild(tag);
 playBtn.addEventListener('click', ()=>{
   if(!ytReady || !ytPlayer) return;
   const state = ytPlayer.getPlayerState();
-  if(state === 1){
+  if(state === YT.PlayerState.PLAYING){
     ytPlayer.pauseVideo();
     playIcon.innerHTML = '<path d="M8 5v14l11-7Z"/>';
     eq.classList.remove('playing');
