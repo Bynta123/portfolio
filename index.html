@@ -515,21 +515,23 @@
   .topnav a.active{position:relative; box-shadow:0 0 18px rgba(124,108,255,.18);}
   .topnav a.active::after{content:''; position:absolute; left:22%; right:22%; bottom:3px; height:2px; border-radius:99px; background:rgba(255,255,255,.55);}
   .skill-chip .skill-logo{width:19px; height:19px; object-fit:contain; flex-shrink:0;}
-  .playlist-wrap{margin-top:22px; display:grid; grid-template-columns:minmax(0,1fr); gap:12px;}
-  .playlist-label{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.08em;}
-  .playlist{position:relative; min-height:74px; padding:4px 0 4px 0;}
+  .playlist-wrap{margin-top:22px;display:block;}
+  .playlist-label,.playlist-hint{display:none;}
+  .playlist{position:relative;min-height:118px;padding:4px 0 8px;}
   .playlist-card{
-    position:relative; display:flex; align-items:center; gap:12px; width:calc(100% - var(--stack-offset, 0px));
-    min-height:66px; padding:10px 12px; border-radius:13px;
-    background:linear-gradient(135deg,rgba(17,20,30,.98),rgba(12,14,22,.98));
-    border:1px solid var(--panel-border); box-shadow:0 10px 25px -18px #000;
-    cursor:grab; user-select:none; touch-action:none;
-    transform:translateX(var(--x,0)) translateY(var(--y,0)) scale(var(--scale,1));
-    transition:transform .42s var(--ease), border-color .25s, box-shadow .25s, opacity .25s;
-    z-index:var(--z,1); margin-bottom:-42px;
+    position:relative;display:flex;align-items:center;gap:12px;width:100%;min-height:72px;padding:10px 12px;border-radius:14px;
+    background:linear-gradient(135deg,rgba(17,20,30,.99),rgba(12,14,22,.99));
+    border:1px solid var(--panel-border);box-shadow:0 14px 30px -20px #000;
+    cursor:pointer;user-select:none;touch-action:none;
+    transform:translateY(var(--stack-y,0px));
+    transition:transform .38s var(--ease),border-color .25s,box-shadow .25s,opacity .25s;
+    z-index:var(--z,1);margin-bottom:-48px;
   }
   .playlist-card:last-child{margin-bottom:0;}
-  .playlist-card:hover{--x:10px; border-color:rgba(124,108,255,.55); box-shadow:0 16px 30px -18px rgba(124,108,255,.4);}
+  .playlist-card:hover{
+    transform:translateY(calc(var(--stack-y,0px) - 38px));
+    border-color:rgba(124,108,255,.7);box-shadow:0 22px 42px -18px rgba(124,108,255,.38);z-index:100;
+  }
   .playlist-card.dragging{opacity:.88; cursor:grabbing; z-index:100; transform:translateX(18px) scale(1.025); border-color:var(--accent-b);}
   .playlist-card.active{border-color:rgba(43,230,200,.55); box-shadow:0 0 0 1px rgba(43,230,200,.12),0 16px 30px -20px rgba(43,230,200,.25);}
   .playlist-card .cover{width:46px;height:46px;border-radius:10px;object-fit:cover;flex:0 0 auto;background:#171a24;}
@@ -569,6 +571,9 @@
   @media (prefers-reduced-motion:reduce){
     *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
   }
+
+/* BOOK STACK */
+.music-stack-wrap{margin-top:22px;display:flex;justify-content:center}.music-stack{position:relative;width:min(100%,760px);height:126px;padding:0 12px}.music-book{position:absolute;left:12px;right:12px;top:0;min-height:104px;border:1px solid var(--panel-border);border-radius:16px;background:linear-gradient(135deg,rgba(23,26,38,.99),rgba(13,15,24,.99));box-shadow:0 18px 40px rgba(0,0,0,.35);display:flex;align-items:center;gap:14px;padding:13px 16px;cursor:pointer;transform:translateY(calc(var(--stack-i)*8px));transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .35s var(--ease);z-index:calc(20 - var(--stack-i));overflow:hidden}.music-book:hover{transform:translateY(calc(var(--stack-i)*8px - 38px));border-color:rgba(124,108,255,.75);box-shadow:0 25px 55px rgba(0,0,0,.5);z-index:100}.music-book.active{border-color:rgba(43,230,200,.7)}.music-book-art{width:62px;height:62px;flex:0 0 62px;border-radius:11px;overflow:hidden;background:#11131c}.music-book-art img{width:100%;height:100%;object-fit:cover;display:block}.music-book-info{min-width:0;flex:1;text-align:left}.music-book-title{display:block;font-weight:800;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.music-book-artist{display:block;margin-top:3px;color:var(--text-dim);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.music-book-hint{display:block;margin-top:7px;font-size:11px;color:var(--text-dim);opacity:.7}.music-book-play{width:38px;height:38px;flex:0 0 38px;border-radius:50%;border:1px solid var(--panel-border);display:grid;place-items:center;background:rgba(255,255,255,.04)}.music-book-play svg{width:16px;height:16px}
 </style>
 </head>
 <body>
@@ -757,7 +762,7 @@
               <span>HTML5</span>
             </div>
             <div class="skill-chip" style="--skill-color:#2965F1;">
-              <img class="skill-logo" src="https://cdn.simpleicons.org/css3/2965F1" alt="CSS3" loading="lazy">
+              <svg class="skill-logo" viewBox="0 0 24 24" aria-hidden="true"><path fill="#264DE4" d="M3.5 2h17l-1.55 17.4L12 22 5.05 19.4 3.5 2Z"/><path fill="#fff" d="M12 4v2.3h6l-.2 2.2H12v2.2h5.55l-.55 6.1-5 1.55V16l2.9-.9.2-2.2H12V10.5h-4.2l-.25-2.2H12V6.3H7.3L7 4h5Z"/></svg>
               <span>CSS3</span>
             </div>
             <div class="skill-chip" style="--skill-color:#F0DB4F;">
@@ -1220,7 +1225,7 @@ function renderPlaylist(){
     card.draggable = true;
     card.dataset.index = index;
     card.style.setProperty('--z', String(playlist.length - index));
-    card.style.setProperty('--stack-offset', `${Math.min(index * 0, 0)}px`);
+    card.style.setProperty('--stack-y', `${index * 8}px`);
 
     card.innerHTML = `
       <div class="song-index">${String(index + 1).padStart(2,'0')}</div>
@@ -1254,7 +1259,7 @@ function renderPlaylist(){
     card.addEventListener('dragover', (e)=>{
       e.preventDefault();
       if(dragIndex === null || dragIndex === index) return;
-      card.style.transform = 'translateX(12px) translateY(-5px) scale(1.02)';
+      card.style.transform = `translateY(${index * 8 - 38}px) scale(1.02)`;
     });
     card.addEventListener('dragleave', ()=>{
       if(!card.classList.contains('dragging')) card.style.transform = '';
@@ -1440,6 +1445,9 @@ document.body.appendChild(tag);
   }
   requestUpdate();
 })();
+
+/* STABLE NAV */
+(()=>{const l=[...document.querySelectorAll('.topnav a[data-nav]')],s=l.map(x=>document.querySelector(x.getAttribute('href'))).filter(Boolean);let lock=0;const set=id=>l.forEach(x=>x.classList.toggle('active',x.getAttribute('href')==='#'+id));const up=()=>{if(Date.now()<lock)return;let id=s[0]?.id,y=scrollY+125;s.forEach(x=>{if(x.offsetTop<=y)id=x.id});if(id)set(id)};l.forEach(x=>x.onclick=()=>{lock=Date.now()+700;set(x.getAttribute('href').slice(1));setTimeout(up,720)});addEventListener('scroll',up,{passive:true});addEventListener('resize',up);up()})();
 </script>
 </body>
 </html>
