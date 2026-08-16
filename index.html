@@ -1115,7 +1115,6 @@ function getRoundText(a){
   return '';
 }
 
-let activityTimer=null;
 function formatElapsed(ms){
  if(!Number.isFinite(ms)||ms<0)return"0:00";
  const total=Math.floor(ms/1000),h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=total%60;
@@ -1238,14 +1237,19 @@ const playlist = [
     title: 'Ta Có Nên',
     artist: 'Bray (B Ray) · Prod. Jurrivh',
     videoId: 'v_gttlXZTVI'
-  }
+  },
 
-  // Ví dụ thêm bài mới:
-  // ,{
-  //   title: 'Tên bài hát',
-  //   artist: 'Tên nghệ sĩ',
-  //   videoId: 'ID_VIDEO_YOUTUBE'
-  // }
+  {
+    title: 'Ngồi Nghe Em Khóc',
+    artist: 'DatG',
+    videoId: 'xJ1uMrL9Rwo'
+  },
+
+  {
+    title: 'Vì Điều Gì?',
+    artist: 'Thịnh suy',
+    videoId: 'BedCo7KEjWU'
+  }
 ];
 
 let currentSong = 0;
