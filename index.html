@@ -168,7 +168,7 @@
     margin-top:-58px; padding:0 26px;
     position:relative; z-index:2;
   }
-  .avatar-wrap{position:relative; flex-shrink:0;}
+  .avatar-wrap{position:relative; flex-shrink:0; overflow:visible;}
   .avatar-ring{
     width:112px; height:112px; border-radius:50%;
     padding:4px; background:var(--bg);
@@ -178,11 +178,16 @@
     width:100%; height:100%; border-radius:50%; object-fit:cover;
     background:var(--panel-solid);
   }
+  .avatar-decoration{
+    position:absolute; inset:-9px; width:130px; height:130px;
+    pointer-events:none; z-index:3; display:none;
+  }
+  .avatar-decoration.show{display:block;}
   .status-dot{
     position:absolute; right:6px; bottom:6px;
     width:22px; height:22px; border-radius:50%;
     background:var(--offline); border:4px solid var(--bg);
-    transition:background .3s;
+    transition:background .3s; z-index:4;
   }
   .status-dot.online{background:var(--online);}
   .status-dot.idle{background:var(--idle);}
@@ -196,6 +201,16 @@
     0%{box-shadow:0 0 0 0 rgba(35,165,90,.55);}
     100%{box-shadow:0 0 0 12px rgba(35,165,90,0);}
   }
+  .clan-tag{
+    position:absolute; left:50%; bottom:-11px; transform:translateX(-50%);
+    display:none; align-items:center; gap:5px;
+    background:rgba(20,22,31,.94); border:1px solid var(--panel-border);
+    padding:3px 9px 3px 4px; border-radius:999px; z-index:5;
+    font-size:11px; font-weight:700; color:var(--text); white-space:nowrap;
+    box-shadow:0 6px 16px -6px rgba(0,0,0,.7);
+  }
+  .clan-tag.show{display:inline-flex;}
+  .clan-tag img{width:15px; height:15px; border-radius:4px;}
 
   .id-block{padding-bottom:8px; flex:1; min-width:0;}
   .id-block h1{font-size:26px; font-weight:800; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
@@ -209,6 +224,14 @@
   }
   .idchip:hover{border-color:var(--accent-a); color:var(--text);}
   .idchip svg{width:12px; height:12px; opacity:.8;}
+  .badges-row{display:flex; align-items:center; gap:5px; margin-top:8px; flex-wrap:wrap;}
+  .badges-row .badge-icon{
+    width:20px; height:20px; border-radius:6px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:800; flex-shrink:0;
+  }
+  .custom-status{display:none; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim); margin-top:6px;}
+  .custom-status img.emoji{width:15px; height:15px;}
 
   .hero-actions{display:flex; gap:8px; padding-bottom:8px; flex-shrink:0;}
   .icon-btn{
@@ -285,9 +308,10 @@
     pointer-events:none;
   }
   .album-art{
-    width:88px; height:88px; border-radius:14px; overflow:hidden; flex-shrink:0;
+    width:88px; height:88px; border-radius:50%; overflow:hidden; flex-shrink:0;
     position:relative; box-shadow:0 12px 30px -10px rgba(0,0,0,.6);
     background:#141722;
+    border:3px solid rgba(255,255,255,.08);
   }
   .album-art img{width:100%; height:100%; object-fit:cover; transition:transform 6s linear;}
   .album-art.spinning img{animation:spin 8s linear infinite;}
@@ -323,7 +347,11 @@
     padding:16px 10px; text-align:center; transition:.25s var(--ease);
   }
   .hobby:hover{transform:translateY(-4px); border-color:var(--accent-a); box-shadow:0 14px 30px -14px rgba(124,108,255,.5);}
-  .hobby svg{width:24px; height:24px; margin:0 auto 8px; color:var(--accent-b);}
+  .hobby-icon-wrap{
+    width:42px; height:42px; margin:0 auto 8px; border-radius:13px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .hobby svg{width:22px; height:22px;}
   .hobby span{font-size:12.5px; color:var(--text-dim); font-weight:500;}
 
   /* ---------- CONNECT ---------- */
@@ -510,7 +538,9 @@
     <div class="identity">
       <div class="avatar-wrap">
         <div class="avatar-ring"><img id="avatarImg" alt="Ảnh đại diện"></div>
+        <img class="avatar-decoration" id="avatarDecoration" alt="">
         <div class="status-dot" id="statusDot" title="Trạng thái Discord"></div>
+        <div class="clan-tag" id="clanTag"><img id="clanTagBadge" alt="" style="display:none;"><span id="clanTagText"></span></div>
       </div>
       <div class="id-block">
         <h1>Tiến Đạt</h1>
@@ -521,6 +551,8 @@
             <span>883583825639247932</span>
           </button>
         </div>
+        <div class="badges-row" id="badgesRow"></div>
+        <div class="custom-status" id="customStatus"></div>
       </div>
       <div class="hero-actions">
         <a class="icon-btn" href="https://github.com/Bynta123" target="_blank" rel="noopener" title="GitHub">
@@ -577,19 +609,27 @@
       <div class="skill-group-label" style="margin-top:26px;">Sở thích cá nhân</div>
       <div class="hobbies">
         <div class="hobby">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9.5"/><path d="M12 2.5c3 3 3 15.5 0 19M4 8.5h16M4 15.5h16"/></svg>
+          <div class="hobby-icon-wrap" style="background:rgba(240,178,50,.14);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#f0b232" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 2.5c3 3 3 15.5 0 19M4 8.5c2.5 1.8 5 1.8 8 1.5 3-.3 5.5.3 8-1.5M4 15.5c2.5-1.8 5-1.8 8-1.5 3 .3 5.5-.3 8 1.5"/></svg>
+          </div>
           <span>Chơi bóng chuyền</span>
         </div>
         <div class="hobby">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2.5" y="5" width="19" height="15" rx="2"/><path d="M2.5 9h19M8 5v4M16 5v4"/></svg>
+          <div class="hobby-icon-wrap" style="background:rgba(255,93,143,.14);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#ff5d8f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="15" rx="2"/><path d="M2.5 9h19M8 5v4M16 5v4"/></svg>
+          </div>
           <span>Coi phim</span>
         </div>
         <div class="hobby">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 4.5c3-1 6-1 8 .5 2-1.5 5-1.5 8-.5v14c-3-1-6-1-8 .5-2-1.5-5-1.5-8-.5Z"/><path d="M12 5v14"/></svg>
+          <div class="hobby-icon-wrap" style="background:rgba(43,230,200,.14);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2be6c8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5c3-1 6-1 8 .5 2-1.5 5-1.5 8-.5v14c-3-1-6-1-8 .5-2-1.5-5-1.5-8-.5Z"/><path d="M12 5v14"/></svg>
+          </div>
           <span>Đọc sách</span>
         </div>
         <div class="hobby">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 13a9 9 0 0 1 18 0v5a2 2 0 0 1-2 2h-1v-7h3M3 18v-5h3v7H5a2 2 0 0 1-2-2Z"/></svg>
+          <div class="hobby-icon-wrap" style="background:rgba(124,108,255,.14);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#7c6cff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13a9 9 0 0 1 18 0v5a2 2 0 0 1-2 2h-1v-7h3M3 18v-5h3v7H5a2 2 0 0 1-2-2Z"/></svg>
+          </div>
           <span>Nghe nhạc</span>
         </div>
       </div>
@@ -881,30 +921,124 @@ const avatarImg = document.getElementById('avatarImg');
 const bannerImg = document.getElementById('bannerImg');
 const statusDot = document.getElementById('statusDot');
 const usernameEl = document.getElementById('discordUsername');
+const avatarDecoEl = document.getElementById('avatarDecoration');
+const clanTagEl = document.getElementById('clanTag');
+const clanTagBadgeEl = document.getElementById('clanTagBadge');
+const clanTagTextEl = document.getElementById('clanTagText');
+const badgesRowEl = document.getElementById('badgesRow');
+const customStatusEl = document.getElementById('customStatus');
 
 avatarImg.src = `https://cdn.discordapp.com/embed/avatars/0.png`;
+
+const BADGE_DEFS = [
+  {bit:1<<0,  label:'Discord Staff',               color:'#5865F2', icon:'S'},
+  {bit:1<<1,  label:'Đối tác Discord',              color:'#5865F2', icon:'P'},
+  {bit:1<<2,  label:'HypeSquad Events',             color:'#f0b232', icon:'H'},
+  {bit:1<<3,  label:'Bug Hunter',                   color:'#2be6c8', icon:'B'},
+  {bit:1<<6,  label:'HypeSquad Bravery',            color:'#9c84ef', icon:'♦'},
+  {bit:1<<7,  label:'HypeSquad Brilliance',         color:'#f47b67', icon:'♦'},
+  {bit:1<<8,  label:'HypeSquad Balance',            color:'#45ddc0', icon:'♦'},
+  {bit:1<<9,  label:'Ủng hộ sớm',                    color:'#ff5d8f', icon:'★'},
+  {bit:1<<14, label:'Bug Hunter Gold',              color:'#f0b232', icon:'B'},
+  {bit:1<<17, label:'Early Verified Bot Developer', color:'#7c6cff', icon:'D'},
+  {bit:1<<18, label:'Moderator Programs Alumni',    color:'#7289da', icon:'M'},
+  {bit:1<<22, label:'Active Developer',             color:'#23a55a', icon:'A'}
+];
+
+function renderBadges(u){
+  badgesRowEl.innerHTML = '';
+  const flags = u.public_flags || 0;
+  BADGE_DEFS.forEach(b=>{
+    if(flags & b.bit){
+      const el = document.createElement('span');
+      el.className = 'badge-icon';
+      el.title = b.label;
+      el.style.background = b.color + '22';
+      el.style.border = '1px solid ' + b.color + '55';
+      el.style.color = b.color;
+      el.textContent = b.icon;
+      badgesRowEl.appendChild(el);
+    }
+  });
+  if(u.avatar_decoration_data){
+    const el = document.createElement('span');
+    el.className = 'badge-icon';
+    el.title = 'Nitro';
+    el.style.background = '#ff73fa22';
+    el.style.border = '1px solid #ff73fa55';
+    el.style.color = '#ff73fa';
+    el.textContent = 'N';
+    badgesRowEl.appendChild(el);
+  }
+}
+
+function renderCustomStatus(activities){
+  const act = (activities || []).find(a => a.type === 4);
+  if(act && (act.state || (act.emoji && act.emoji.name))){
+    let html = '';
+    if(act.emoji){
+      if(act.emoji.id){
+        const ext = act.emoji.animated ? 'gif' : 'png';
+        html += `<img class="emoji" src="https://cdn.discordapp.com/emojis/${act.emoji.id}.${ext}" alt="">`;
+      } else {
+        html += `<span>${act.emoji.name}</span>`;
+      }
+    }
+    if(act.state) html += `<span>${act.state}</span>`;
+    customStatusEl.innerHTML = html;
+    customStatusEl.style.display = 'flex';
+  } else {
+    customStatusEl.style.display = 'none';
+  }
+}
 
 fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
   .then(r=>r.json())
   .then(res=>{
     if(res && res.success && res.data){
       const u = res.data.discord_user || {};
-      
-      // Sửa lỗi lấy avatar Discord (hỗ trợ GIF và PNG)
-      if(u.avatar){ 
+
+      // Avatar (hỗ trợ GIF và PNG)
+      if(u.avatar){
         const ext = u.avatar.startsWith('a_') ? 'gif' : 'png';
-        avatarImg.src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${ext}?size=256`; 
+        avatarImg.src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${ext}?size=256`;
       } else {
         avatarImg.src = `https://cdn.discordapp.com/embed/avatars/${(u.discriminator || 0) % 5}.png`;
       }
-      
-      // Sửa lỗi lấy banner Discord (hỗ trợ GIF và PNG)
-      if(u.banner){ 
+
+      // Banner (hỗ trợ GIF và PNG)
+      if(u.banner){
         const bannerExt = u.banner.startsWith('a_') ? 'gif' : 'png';
-        bannerImg.src = `https://cdn.discordapp.com/banners/${u.id}/${u.banner}.${bannerExt}?size=600`; 
-        bannerImg.classList.add('loaded'); 
+        bannerImg.src = `https://cdn.discordapp.com/banners/${u.id}/${u.banner}.${bannerExt}?size=600`;
+        bannerImg.classList.add('loaded');
       }
-      
+
+      // Khung avatar (avatar decoration / Nitro frame)
+      if(u.avatar_decoration_data && u.avatar_decoration_data.asset){
+        avatarDecoEl.src = `https://cdn.discordapp.com/avatar-decoration-presets/${u.avatar_decoration_data.asset}.png?size=160`;
+        avatarDecoEl.classList.add('show');
+      } else {
+        avatarDecoEl.classList.remove('show');
+      }
+
+      // Nhãn clan / primary guild tag
+      if(u.clan && u.clan.tag){
+        clanTagTextEl.textContent = u.clan.tag;
+        if(u.clan.identity_guild_id && u.clan.badge){
+          clanTagBadgeEl.src = `https://cdn.discordapp.com/clan-badges/${u.clan.identity_guild_id}/${u.clan.badge}.png?size=32`;
+          clanTagBadgeEl.style.display = 'block';
+        } else {
+          clanTagBadgeEl.style.display = 'none';
+        }
+        clanTagEl.classList.add('show');
+      } else {
+        clanTagEl.classList.remove('show');
+      }
+
+      // Huy hiệu (badges) + trạng thái tuỳ chỉnh
+      renderBadges(u);
+      renderCustomStatus(res.data.activities);
+
       usernameEl.textContent = '@' + (u.username || 'Bynta123');
       const st = res.data.discord_status || 'offline';
       statusDot.classList.remove('online','idle','dnd');
