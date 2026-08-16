@@ -314,9 +314,24 @@
     background:#141722;
     border:3px solid rgba(255,255,255,.08);
   }
-  .album-art img{width:100%; height:100%; object-fit:cover; transition:transform 6s linear;}
+  .album-art::before{
+    content:''; position:absolute; inset:0; border-radius:50%; z-index:2; pointer-events:none;
+    background:repeating-radial-gradient(circle at 50% 50%,
+      rgba(0,0,0,.32) 0px, rgba(0,0,0,.32) 1px,
+      transparent 1px, transparent 5px);
+    mix-blend-mode:multiply; opacity:.55;
+  }
+  .album-art::after{
+    content:''; position:absolute; top:50%; left:50%; width:22px; height:22px;
+    transform:translate(-50%,-50%); border-radius:50%; z-index:3; pointer-events:none;
+    background:#0c0d12; box-shadow:0 0 0 2px rgba(255,255,255,.12), inset 0 0 0 3px #1c1f2b;
+  }
+  .album-art img{
+    width:100%; height:100%; object-fit:cover; object-position:center;
+    transform:scale(1.45); transition:transform 6s linear;
+  }
   .album-art.spinning img{animation:spin 8s linear infinite;}
-  @keyframes spin{from{transform:rotate(0)} to{transform:rotate(360deg)}}
+  @keyframes spin{from{transform:scale(1.45) rotate(0)} to{transform:scale(1.45) rotate(360deg)}}
   .music-info{flex:1; min-width:0;}
   .music-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--accent-b); letter-spacing:.1em; text-transform:uppercase; display:flex; align-items:center; gap:6px; margin-bottom:4px;}
   .music-title{font-family:'Sora',sans-serif; font-weight:700; font-size:16.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
@@ -918,6 +933,13 @@ const gmailComposeUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encod
 
 /* ============ DISCORD (Lanyard: trạng thái + banner · Grux: avatar/khung/huy hiệu/clan/tên thật) ============ */
 const DISCORD_ID = '883583825639247932';
+
+// Nếu Lanyard không lấy được banner (Discord không cho bot đọc banner qua API thường,
+// banner GIF lại càng hay bị thiếu), dán link ảnh/GIF banner của bạn vào đây làm dự phòng.
+// Cách lấy link: Cài đặt Discord > Hồ sơ của tôi > banner > bấm phải chuột vào banner
+// (trên web discord.com) > "Sao chép địa chỉ hình ảnh".
+const MANUAL_BANNER_URL = 'https://cdn.discordapp.com/banners/883583825639247932/a_1197751ef6c3e68ca9d5ff68bbbccad1.png?size=1024';
+
 const avatarImg = document.getElementById('avatarImg');
 const bannerImg = document.getElementById('bannerImg');
 const statusDot = document.getElementById('statusDot');
@@ -970,6 +992,14 @@ fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
         const bannerExt = u.banner.startsWith('a_') ? 'gif' : 'png';
         bannerImg.src = `https://cdn.discordapp.com/banners/${u.id}/${u.banner}.${bannerExt}?size=600`;
         bannerImg.classList.add('loaded');
+      } else if(MANUAL_BANNER_URL){
+        bannerImg.src = MANUAL_BANNER_URL;
+        bannerImg.classList.add('loaded');
+      } else if(u.accent_color !== undefined && u.accent_color !== null){
+        // Không có banner ảnh (do Lanyard chưa cache được banner, hoặc tài khoản không có Nitro để đặt banner ảnh)
+        // -> dùng màu accent thật của Discord làm nền banner thay vì để gradient mặc định
+        const hex = '#' + u.accent_color.toString(16).padStart(6,'0');
+        document.getElementById('banner').style.background = hex;
       }
 
       renderCustomStatus(res.data.activities);
@@ -981,7 +1011,12 @@ fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
       else if(st==='idle') statusDot.classList.add('idle');
       else if(st==='dnd') statusDot.classList.add('dnd');
     }
-  }).catch(()=>{});
+  }).catch(()=>{
+    if(MANUAL_BANNER_URL){
+      bannerImg.src = MANUAL_BANNER_URL;
+      bannerImg.classList.add('loaded');
+    }
+  });
 
 // ---- Grux: trả sẵn ảnh khung avatar, TOÀN BỘ huy hiệu (badge) thật của Discord, tag clan/server và tên hiển thị ----
 fetch(`https://grux.audibert.dev/user/${DISCORD_ID}`)
