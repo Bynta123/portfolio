@@ -571,16 +571,38 @@
   }
 
 
-.activity-box{display:none;align-items:center;gap:10px;margin-top:10px;width:max-content;max-width:100%;padding:7px 11px 7px 7px;border:1px solid var(--panel-border);background:rgba(255,255,255,.035);border-radius:12px}
+
+
+
+
+
+
+
+
+
+
+
+
+/* ACTIVITY RESPONSIVE */
+.activity-box{display:none;align-items:center;gap:10px;margin-top:10px;width:100%;max-width:100%;box-sizing:border-box;padding:7px 10px 7px 7px;border:1px solid var(--panel-border);background:rgba(255,255,255,.035);border-radius:12px;overflow:hidden}
 .activity-box.show{display:flex}
-.activity-box>img{width:38px;height:38px;border-radius:9px;object-fit:cover;background:#11131a;flex:0 0 38px}
-.activity-info{min-width:0}
-.activity-name{font-size:12.5px;font-weight:700;color:var(--text)}
-.activity-round{margin-top:2px;font-size:11.5px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:330px}
-.activity-meta{display:flex;align-items:center;gap:10px;margin-top:4px;font-size:10.5px;color:var(--text-faint);white-space:nowrap}
+.activity-box>img{width:38px;height:38px;min-width:38px;max-width:38px;border-radius:9px;object-fit:cover;background:#11131a;flex-shrink:0}
+.activity-info{min-width:0;width:100%;flex:1;overflow:hidden}
+.activity-name{font-size:12.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.activity-round{margin-top:2px;font-size:11.5px;color:var(--text-dim);max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.activity-meta{display:flex;align-items:center;gap:10px;margin-top:4px;max-width:100%;font-size:10.5px;color:var(--text-faint);white-space:nowrap;overflow:hidden}
+.activity-meta span{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .activity-meta span+span{padding-left:10px;border-left:1px solid var(--panel-border)}
-.activity-party::before{content:"👥";font-size:10px}
-.activity-playtime::before{content:"◷";font-size:11px}
+.activity-party::before{content:"👥";font-size:10px;margin-right:3px}
+.activity-playtime::before{content:"◷";font-size:11px;margin-right:3px}
+@media (max-width:600px){
+.activity-box{width:100%;max-width:100%;margin-top:8px;padding:6px 8px 6px 6px;gap:8px;border-radius:10px}
+.activity-box>img{width:34px;height:34px;min-width:34px;max-width:34px;border-radius:8px}
+.activity-name{font-size:12px}
+.activity-round{font-size:10.5px}
+.activity-meta{gap:7px;font-size:10px;max-width:100%}
+.activity-meta span+span{padding-left:7px}
+}
 
 </style>
 </head>
@@ -1093,57 +1115,39 @@ function getRoundText(a){
   return '';
 }
 
+let activityTimer=null;
+function formatElapsed(ms){
+ if(!Number.isFinite(ms)||ms<0)return"0:00";
+ const total=Math.floor(ms/1000),h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=total%60;
+ return h>0?`${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`:`${m}:${String(s).padStart(2,"0")}`;
+}
+function getRoundText(a){
+ const text=[a.state,a.details].filter(Boolean).join(" · ");
+ const match=text.match(/(?:round|vòng)\s*[:#-]?\s*(\d+)/i);
+ return match?`Round ${match[1]}`:(a.state||a.details||"");
+}
 function renderActivity(activities){
-  const a=(activities||[]).find(x=>x.type===0||x.type===1||x.type===2||x.type===3);
-  const box=document.getElementById('activityBox');
-  const icon=document.getElementById('activityIcon');
-  const name=document.getElementById('activityName');
-  const round=document.getElementById('activityRound');
-  const meta=document.getElementById('activityMeta');
-  const party=document.getElementById('activityParty');
-  const playtime=document.getElementById('activityPlaytime');
-
-  clearInterval(activityTimer);
-
-  if(!a){
-    box.classList.remove('show');
-    round.textContent='';
-    meta.style.display='none';
-    party.textContent='';
-    playtime.textContent='';
-    return;
-  }
-
-  name.textContent=
-    (a.type===0?'Đang chơi ':
-     a.type===1?'Đang stream ':
-     a.type===2?'Đang nghe ':
-     'Đang xem ') + (a.name||'');
-
-  const roundText=getRoundText(a);
-  round.textContent=roundText;
-  round.style.display=roundText?'block':'none';
-
-  let img='https://cdn.discordapp.com/embed/avatars/0.png';
-  const key=a.assets?.large_image||a.assets?.small_image;
-  if(key&&a.application_id){
-    if(key.startsWith('mp:external/')) img='https://media.discordapp.net/external/'+key.slice(12);
-    else img=`https://cdn.discordapp.com/app-assets/${a.application_id}/${key}.png`;
-  }
-  icon.src=img;
-
-  const size=a.party?.size;
-  party.textContent=(Array.isArray(size)&&size.length>=2)?`${size[0]}/${size[1]} người`:'';
-
-  function updatePlaytime(){
-    const start=Number(a.timestamps?.start);
-    playtime.textContent=(start&&Number.isFinite(start))?formatElapsed(Date.now()-start):'';
-    meta.style.display=(party.textContent||playtime.textContent)?'flex':'none';
-  }
-
-  updatePlaytime();
-  if(a.timestamps?.start) activityTimer=setInterval(updatePlaytime,1000);
-  box.classList.add('show');
+ const a=(activities||[]).find(x=>[0,1,2,3].includes(x.type));
+ const box=document.getElementById("activityBox"),icon=document.getElementById("activityIcon"),name=document.getElementById("activityName"),round=document.getElementById("activityRound"),meta=document.getElementById("activityMeta"),party=document.getElementById("activityParty"),playtime=document.getElementById("activityPlaytime");
+ clearInterval(activityTimer);
+ if(!a){box.classList.remove("show");round.textContent="";party.textContent="";playtime.textContent="";meta.style.display="none";return;}
+ const prefix=a.type===0?"Đang chơi ":a.type===1?"Đang stream ":a.type===2?"Đang nghe ":"Đang xem ";
+ name.textContent=prefix+(a.name||"");
+ const roundText=getRoundText(a);round.textContent=roundText;round.style.display=roundText?"block":"none";
+ const key=a.assets?.large_image||a.assets?.small_image;
+ let imageUrl="https://cdn.discordapp.com/embed/avatars/0.png";
+ if(key){if(key.startsWith("mp:external/"))imageUrl="https://media.discordapp.net/external/"+key.slice(12);else if(a.application_id)imageUrl=`https://cdn.discordapp.com/app-assets/${a.application_id}/${key}.png`;}
+ icon.src=imageUrl;icon.onerror=()=>{icon.src="https://cdn.discordapp.com/embed/avatars/0.png";};
+ const size=a.party?.size;
+ party.textContent=Array.isArray(size)&&size.length>=2?`${size[0]}/${size[1]} người`:"";
+ function updatePlaytime(){
+   const start=Number(a.timestamps?.start);
+   playtime.textContent=start&&Number.isFinite(start)?formatElapsed(Date.now()-start):"";
+   meta.style.display=party.textContent||playtime.textContent?"flex":"none";
+ }
+ updatePlaytime();
+ if(a.timestamps?.start)activityTimer=setInterval(updatePlaytime,1000);
+ box.classList.add("show");
 }
 function updateLanyard(data){
   if(!data)return; const u=data.discord_user||{};
