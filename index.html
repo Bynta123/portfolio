@@ -50,7 +50,7 @@
   button{font-family:inherit; cursor:pointer;}
   ::selection{background:var(--accent-a); color:#fff;}
 
-  /* ---------- NIGHT STARRY SKY BACKGROUND ---------- */
+  /* ---------- NIGHT STARRY SKY BACKGROUND & PLANETS ---------- */
   .sky-bg{
     position:fixed; inset:0; z-index:-2; overflow:hidden; pointer-events:none;
     background:radial-gradient(ellipse 1200px 800px at 50% 0%, #0d1030 0%, #070818 45%, #030308 100%);
@@ -90,24 +90,32 @@
       radial-gradient(circle at 55% 30%, rgba(150,140,110,.25) 0 5px, transparent 6px);
   }
 
-  #starsCanvas{position:absolute; inset:0; width:100%; height:100%;}
+  /* Ringed Planets */
+  .planet-ringed-1{
+    position:absolute; top:22%; left:8%; width:48px; height:48px; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, #7c6cff, #3b2d9e 70%, #1a1250 100%);
+    box-shadow:0 0 20px rgba(124,108,255,.3);
+    transform:rotate(-22deg);
+  }
+  .planet-ringed-1::after{
+    content:''; position:absolute; top:50%; left:50%; width:86px; height:22px;
+    border:3px solid rgba(180,170,255,.65); border-radius:50%;
+    transform:translate(-50%,-50%); box-shadow:0 0 10px rgba(124,108,255,.4);
+  }
 
-  .shooting-star{
-    position:absolute; width:2px; height:2px; border-radius:50%; background:#fff;
-    opacity:0; animation:shoot linear infinite;
+  .planet-ringed-2{
+    position:absolute; top:55%; right:6%; width:34px; height:34px; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, #2be6c8, #11806e 70%, #053830 100%);
+    box-shadow:0 0 16px rgba(43,230,200,.25);
+    transform:rotate(18deg);
   }
-  .shooting-star::before{
-    content:''; position:absolute; top:50%; right:0; width:90px; height:1px;
-    background:linear-gradient(90deg, rgba(255,255,255,.85), transparent);
-    transform:translateY(-50%);
+  .planet-ringed-2::after{
+    content:''; position:absolute; top:50%; left:50%; width:64px; height:16px;
+    border:2px solid rgba(130,245,225,.6); border-radius:50%;
+    transform:translate(-50%,-50%); box-shadow:0 0 8px rgba(43,230,200,.3);
   }
-  @keyframes shoot{
-    0%{opacity:0; transform:translate(0,0);}
-    2%{opacity:1;}
-    16%{opacity:1; transform:translate(-260px,150px);}
-    20%{opacity:0; transform:translate(-300px,175px);}
-    100%{opacity:0;}
-  }
+
+  #starsCanvas{position:absolute; inset:0; width:100%; height:100%;}
 
   .glow-cursor{
     position:fixed; width:420px; height:420px; border-radius:50%;
@@ -163,12 +171,13 @@
   .banner img.loaded{opacity:1;}
   .banner-noise{position:absolute; inset:0; background-image:radial-gradient(rgba(255,255,255,.08) 1px, transparent 1px); background-size:16px 16px; opacity:.5;}
 
+  /* Layout điều chỉnh xích phần Tên & Badge xuống để thoáng mắt */
   .identity{
-    display:flex; align-items:flex-end; gap:20px;
-    margin-top:-58px; padding:0 26px;
+    display:flex; align-items:flex-start; gap:20px;
+    margin-top:-45px; padding:0 26px;
     position:relative; z-index:2;
   }
-  .avatar-wrap{position:relative; flex-shrink:0; overflow:visible;}
+  .avatar-wrap{position:relative; flex-shrink:0; overflow:visible; margin-top:-10px;}
   .avatar-ring{
     width:112px; height:112px; border-radius:50%;
     padding:4px; background:var(--bg);
@@ -212,9 +221,10 @@
   .clan-tag.show{display:inline-flex;}
   .clan-tag img{width:15px; height:15px; border-radius:4px;}
 
-  .id-block{padding-bottom:8px; flex:1; min-width:0;}
-  .id-block h1{font-size:26px; font-weight:800; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
-  .tag-mono{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-dim); margin-top:3px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  /* xích phần thông tin tên xuống dưới */
+  .id-block{padding-top:55px; flex:1; min-width:0;}
+  .id-block h1{font-size:28px; font-weight:800; display:flex; align-items:center; gap:8px; flex-wrap:wrap; line-height:1.2;}
+  .tag-mono{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-dim); margin-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
   .idchip{
     display:inline-flex; align-items:center; gap:6px;
     background:var(--panel); border:1px solid var(--panel-border);
@@ -224,17 +234,17 @@
   }
   .idchip:hover{border-color:var(--accent-a); color:var(--text);}
   .idchip svg{width:12px; height:12px; opacity:.8;}
-  .badges-row{display:flex; align-items:center; gap:6px; margin-top:8px; flex-wrap:wrap;}
+  .badges-row{display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap;}
   .badges-row img.badge-icon{
     width:22px; height:22px; flex-shrink:0;
     filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));
     transition:transform .2s var(--ease);
   }
   .badges-row img.badge-icon:hover{transform:translateY(-2px) scale(1.08);}
-  .custom-status{display:none; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim); margin-top:6px;}
+  .custom-status{display:none; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim); margin-top:8px;}
   .custom-status img.emoji{width:15px; height:15px;}
 
-  .hero-actions{display:flex; gap:8px; padding-bottom:8px; flex-shrink:0;}
+  .hero-actions{display:flex; gap:8px; padding-top:55px; flex-shrink:0;}
   .icon-btn{
     width:38px; height:38px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
@@ -505,8 +515,9 @@
     .hobbies{grid-template-columns:repeat(2,1fr);}
     .music-card{flex-wrap:wrap;}
     .music-controls{width:100%; justify-content:space-between; order:3;}
-    .identity{flex-wrap:wrap;}
-    .hero-actions{padding-bottom:0; margin-top:10px;}
+    .identity{flex-wrap:wrap; margin-top:-30px;}
+    .id-block{padding-top:10px;}
+    .hero-actions{padding-top:10px; margin-top:0;}
   }
   @media (max-width:460px){
     .connect-grid{grid-template-columns:repeat(2,1fr);}
@@ -522,8 +533,12 @@
   <div class="sky-glow"></div>
   <div class="milky-way"></div>
   <div class="moon"></div>
+  
+  <!-- Hành tinh có vành đai -->
+  <div class="planet-ringed-1"></div>
+  <div class="planet-ringed-2"></div>
+
   <canvas id="starsCanvas"></canvas>
-  <div id="shootingStarsLayer"></div>
 </div>
 <div class="glow-cursor" id="cursorGlow"></div>
 
@@ -696,6 +711,14 @@
               <svg viewBox="0 0 24 24" fill="#F0DB4F"><path d="M2 2h20v20H2V2Zm10.7 15.4c.35.7 1 1.28 2.15 1.28 1 0 1.6-.5 1.6-1.2 0-.83-.62-1.13-1.67-1.6l-.57-.24c-1.65-.7-2.75-1.58-2.75-3.45 0-1.72 1.3-3.02 3.35-3.02 1.45 0 2.5.5 3.25 1.85l-1.78 1.14c-.4-.7-.83-.98-1.47-.98-.67 0-1.1.42-1.1.98 0 .68.43.96 1.4 1.38l.57.24c1.95.83 3.05 1.68 3.05 3.6 0 2.06-1.62 3.2-3.8 3.2-2.13 0-3.5-1-4.18-2.35l1.85-1.03Zm-8.03.18c.35.62.66 1.15 1.42 1.15.73 0 1.19-.29 1.19-1.4V9.1h2.28v8.28c0 2.36-1.38 3.43-3.4 3.43-1.82 0-2.87-.94-3.4-2.08l1.9-1.16Z"/></svg>
               <span>JavaScript</span>
             </div>
+            <div class="skill-chip" style="--skill-color:#61DAFB;">
+              <svg viewBox="0 0 24 24" fill="#61DAFB"><path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0-7c-2.3 0-4.6.5-6.5 1.6A11.7 11.7 0 0 0 1 12a11.7 11.7 0 0 0 4.5 8.4c1.9 1.1 4.2 1.6 6.5 1.6 2.3 0 4.6-.5 6.5-1.6A11.7 11.7 0 0 0 23 12a11.7 11.7 0 0 0-4.5-8.4C16.6 2.5 14.3 2 12 2zm0 18c-5 0-9-3.6-9-8s4-8 9-8 9 3.6 9 8-4 8-9 8z"/></svg>
+              <span>React</span>
+            </div>
+            <div class="skill-chip" style="--skill-color:#68A063;">
+              <svg viewBox="0 0 24 24" fill="#68A063"><path d="M12 2a10 10 0 0 0-10 10c0 5.5 4.5 10 10 10s10-4.5 10-10A10 10 0 0 0 12 2zm1 14.5h-2v-5h2v5zm0-7h-2V7h2v2.5z"/></svg>
+              <span>Node.js</span>
+            </div>
           </div>
         </div>
         <div>
@@ -768,7 +791,7 @@
     <!-- ============ CONTACT ============ -->
     <section id="contact" class="panel">
       <div class="eyebrow">Thông tin &amp; liên hệ</div>
-      <h2 class="sec-title">Thông tin liên hệ <span>· gửi mình một tin nhắn</span></h2>
+      <h2 class="sec-title">Thông tin liên hệ</h2>
 
       <div class="contact-grid">
         <div class="info-list">
@@ -787,6 +810,10 @@
           <div class="info-row">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.1 2.7 2.5 6 2.5s6-1.4 6-2.5v-5"/></svg>
             <div><div class="k">Công việc</div><div class="v">Sinh viên năm cuối</div></div>
+          </div>
+          <div class="info-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21.7C17.3 17 20 13 20 9a8 8 0 1 0-16 0c0 4 2.7 8 8 12.7z"/><circle cx="12" cy="9" r="3"/></svg>
+            <div><div class="k">Trường học</div><div class="v">Đại học Nguyễn Tất Thành</div></div>
           </div>
           <div class="info-row">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -828,7 +855,6 @@
 (function(){
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const canvas = document.getElementById('starsCanvas');
-  const shootingLayer = document.getElementById('shootingStarsLayer');
   const ctx = canvas.getContext('2d');
   let w, h, dpr;
   let particles = [];
@@ -931,13 +957,8 @@ const gmailComposeUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encod
   if(el) el.addEventListener('click', (e)=>{ e.preventDefault(); window.open(gmailComposeUrl, '_blank', 'noopener'); });
 });
 
-/* ============ DISCORD (Lanyard: trạng thái + banner · Grux: avatar/khung/huy hiệu/clan/tên thật) ============ */
+/* ============ DISCORD (Lanyard & Grux) ============ */
 const DISCORD_ID = '883583825639247932';
-
-// Nếu Lanyard không lấy được banner (Discord không cho bot đọc banner qua API thường,
-// banner GIF lại càng hay bị thiếu), dán link ảnh/GIF banner của bạn vào đây làm dự phòng.
-// Cách lấy link: Cài đặt Discord > Hồ sơ của tôi > banner > bấm phải chuột vào banner
-// (trên web discord.com) > "Sao chép địa chỉ hình ảnh".
 const MANUAL_BANNER_URL = 'https://i.pinimg.com/originals/ae/52/d9/ae52d968e7d8117170d2eeff6245ca5c.gif';
 
 const avatarImg = document.getElementById('avatarImg');
@@ -974,7 +995,6 @@ function renderCustomStatus(activities){
   }
 }
 
-// ---- Lanyard: banner, trạng thái online/idle/dnd, tên tài khoản @xxx ----
 fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
   .then(r=>r.json())
   .then(res=>{
@@ -996,8 +1016,6 @@ fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
         bannerImg.src = MANUAL_BANNER_URL;
         bannerImg.classList.add('loaded');
       } else if(u.accent_color !== undefined && u.accent_color !== null){
-        // Không có banner ảnh (do Lanyard chưa cache được banner, hoặc tài khoản không có Nitro để đặt banner ảnh)
-        // -> dùng màu accent thật của Discord làm nền banner thay vì để gradient mặc định
         const hex = '#' + u.accent_color.toString(16).padStart(6,'0');
         document.getElementById('banner').style.background = hex;
       }
@@ -1018,24 +1036,20 @@ fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
     }
   });
 
-// ---- Grux: trả sẵn ảnh khung avatar, TOÀN BỘ huy hiệu (badge) thật của Discord, tag clan/server và tên hiển thị ----
 fetch(`https://grux.audibert.dev/user/${DISCORD_ID}`)
   .then(r=>r.json())
   .then(res=>{
     if(res && res.success && res.data && res.data.profile){
       const p = res.data.profile;
 
-      // Tên hiển thị Discord thay cho "Tiến Đạt" ở đầu trang
       if(p.display_name || p.username){
         heroNameEl.textContent = p.display_name || p.username;
       }
 
-      // Nếu Lanyard chưa kịp trả avatar thì dùng luôn ảnh từ Grux
       if(p.avatar_image && avatarImg.src.includes('embed/avatars')){
         avatarImg.src = p.avatar_image;
       }
 
-      // Khung avatar (avatar decoration) — ảnh có sẵn, không cần tự đoán link
       if(p.avatar_decoration_image){
         avatarDecoEl.src = p.avatar_decoration_image;
         avatarDecoEl.classList.add('show');
@@ -1043,7 +1057,6 @@ fetch(`https://grux.audibert.dev/user/${DISCORD_ID}`)
         avatarDecoEl.classList.remove('show');
       }
 
-      // Tag clan / server chính
       if(p.clan && p.clan.tag){
         clanTagTextEl.textContent = p.clan.tag;
         if(p.clan.clan_image){
@@ -1057,7 +1070,6 @@ fetch(`https://grux.audibert.dev/user/${DISCORD_ID}`)
         clanTagEl.classList.remove('show');
       }
 
-      // Toàn bộ huy hiệu thật (Nitro, Boost, HypeSquad, Bug Hunter, Quest, v.v.) bằng ảnh gốc từ Discord
       badgesRowEl.innerHTML = '';
       (p.badges || []).forEach(b=>{
         const img = document.createElement('img');
@@ -1119,7 +1131,6 @@ window.onYouTubeIframeAPIReady = function(){
   });
 };
 
-// Cập nhật tiến trình thời gian nhạc chạy liên tục
 setInterval(()=>{
   if(ytReady && ytPlayer && typeof ytPlayer.getCurrentTime === 'function'){
     const state = ytPlayer.getPlayerState();
