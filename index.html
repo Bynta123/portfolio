@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IsT1Lm1kSh3R</title>
+<title>Tiến Đạt — Portfolio</title>
 <meta name="description" content="Portfolio cá nhân của Tiến Đạt — Sinh viên năm cuối, lập trình web, Bến Tre.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -515,23 +515,21 @@
   .topnav a.active{position:relative; box-shadow:0 0 18px rgba(124,108,255,.18);}
   .topnav a.active::after{content:''; position:absolute; left:22%; right:22%; bottom:3px; height:2px; border-radius:99px; background:rgba(255,255,255,.55);}
   .skill-chip .skill-logo{width:19px; height:19px; object-fit:contain; flex-shrink:0;}
-  .playlist-wrap{margin-top:22px;display:block;}
-  .playlist-label,.playlist-hint{display:none;}
-  .playlist{position:relative;min-height:118px;padding:4px 0 8px;}
+  .playlist-wrap{margin-top:22px; display:grid; grid-template-columns:minmax(0,1fr); gap:12px;}
+  .playlist-label{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.08em;}
+  .playlist{position:relative; min-height:74px; padding:4px 0 4px 0;}
   .playlist-card{
-    position:relative;display:flex;align-items:center;gap:12px;width:100%;min-height:72px;padding:10px 12px;border-radius:14px;
-    background:linear-gradient(135deg,rgba(17,20,30,.99),rgba(12,14,22,.99));
-    border:1px solid var(--panel-border);box-shadow:0 14px 30px -20px #000;
-    cursor:pointer;user-select:none;touch-action:none;
-    transform:translateY(var(--stack-y,0px));
-    transition:transform .38s var(--ease),border-color .25s,box-shadow .25s,opacity .25s;
-    z-index:var(--z,1);margin-bottom:-48px;
+    position:relative; display:flex; align-items:center; gap:12px; width:calc(100% - var(--stack-offset, 0px));
+    min-height:66px; padding:10px 12px; border-radius:13px;
+    background:linear-gradient(135deg,rgba(17,20,30,.98),rgba(12,14,22,.98));
+    border:1px solid var(--panel-border); box-shadow:0 10px 25px -18px #000;
+    cursor:grab; user-select:none; touch-action:none;
+    transform:translateX(var(--x,0)) translateY(var(--y,0)) scale(var(--scale,1));
+    transition:transform .42s var(--ease), border-color .25s, box-shadow .25s, opacity .25s;
+    z-index:var(--z,1); margin-bottom:-42px;
   }
   .playlist-card:last-child{margin-bottom:0;}
-  .playlist-card:hover{
-    transform:translateY(calc(var(--stack-y,0px) - 38px));
-    border-color:rgba(124,108,255,.7);box-shadow:0 22px 42px -18px rgba(124,108,255,.38);z-index:100;
-  }
+  .playlist-card:hover{--x:10px; border-color:rgba(124,108,255,.55); box-shadow:0 16px 30px -18px rgba(124,108,255,.4);}
   .playlist-card.dragging{opacity:.88; cursor:grabbing; z-index:100; transform:translateX(18px) scale(1.025); border-color:var(--accent-b);}
   .playlist-card.active{border-color:rgba(43,230,200,.55); box-shadow:0 0 0 1px rgba(43,230,200,.12),0 16px 30px -20px rgba(43,230,200,.25);}
   .playlist-card .cover{width:46px;height:46px;border-radius:10px;object-fit:cover;flex:0 0 auto;background:#171a24;}
@@ -571,9 +569,7 @@
   @media (prefers-reduced-motion:reduce){
     *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
   }
-
-/* BOOK STACK */
-.music-stack-wrap{margin-top:22px;display:flex;justify-content:center}.music-stack{position:relative;width:min(100%,760px);height:126px;padding:0 12px}.music-book{position:absolute;left:12px;right:12px;top:0;min-height:104px;border:1px solid var(--panel-border);border-radius:16px;background:linear-gradient(135deg,rgba(23,26,38,.99),rgba(13,15,24,.99));box-shadow:0 18px 40px rgba(0,0,0,.35);display:flex;align-items:center;gap:14px;padding:13px 16px;cursor:pointer;transform:translateY(calc(var(--stack-i)*8px));transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .35s var(--ease);z-index:calc(20 - var(--stack-i));overflow:hidden}.music-book:hover{transform:translateY(calc(var(--stack-i)*8px - 38px));border-color:rgba(124,108,255,.75);box-shadow:0 25px 55px rgba(0,0,0,.5);z-index:100}.music-book.active{border-color:rgba(43,230,200,.7)}.music-book-art{width:62px;height:62px;flex:0 0 62px;border-radius:11px;overflow:hidden;background:#11131c}.music-book-art img{width:100%;height:100%;object-fit:cover;display:block}.music-book-info{min-width:0;flex:1;text-align:left}.music-book-title{display:block;font-weight:800;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.music-book-artist{display:block;margin-top:3px;color:var(--text-dim);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.music-book-hint{display:block;margin-top:7px;font-size:11px;color:var(--text-dim);opacity:.7}.music-book-play{width:38px;height:38px;flex:0 0 38px;border-radius:50%;border:1px solid var(--panel-border);display:grid;place-items:center;background:rgba(255,255,255,.04)}.music-book-play svg{width:16px;height:16px}
+.activity-box{display:none;align-items:center;gap:10px;margin-top:10px;width:max-content;max-width:100%;padding:7px 11px 7px 7px;border:1px solid var(--panel-border);background:rgba(255,255,255,.035);border-radius:12px}.activity-box.show{display:flex}.activity-box>img{width:38px;height:38px;border-radius:9px;object-fit:cover;background:#11131a;flex:0 0 38px}.activity-info{min-width:0}.activity-name{font-size:12.5px;font-weight:700;color:var(--text)}.activity-details{margin-top:2px;font-size:11px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
 </style>
 </head>
 <body>
@@ -633,6 +629,7 @@
         </div>
         <div class="badges-row" id="badgesRow"></div>
         <div class="custom-status" id="customStatus"></div>
+        <div class="activity-box" id="activityBox"><img id="activityIcon" src="" alt=""><div class="activity-info"><div class="activity-name" id="activityName"></div><div class="activity-details" id="activityDetails"></div></div></div>
       </div>
       <div class="hero-actions">
         <a class="icon-btn" href="https://github.com/Bynta123" target="_blank" rel="noopener" title="GitHub">
@@ -662,7 +659,7 @@
     <!-- ============ MUSIC & HOBBIES ============ -->
     <section id="music" class="panel">
       <div class="eyebrow">Âm nhạc &amp; sở thích</div>
-      <h2 class="sec-title">Đang nghe</h2>
+      <h2 class="sec-title">Đang nghe <span>· không có gì hơn một bài rap hay lúc học bài</span></h2>
 
       <div class="music-card">
         <div class="album-art" id="albumArt">
@@ -689,7 +686,7 @@
         </div>
       </div>
       <div class="playlist-wrap">
-        <div class="playlist-label">Playlist</div>
+        <div class="playlist-label">Playlist · kéo để đổi thứ tự</div>
         <div class="playlist" id="playlist"></div>
         <div class="playlist-hint">↕ <span><b>Kéo một bài lên bài khác</b> để đổi vị trí. Thứ tự này chỉ tồn tại trong phiên hiện tại.</span></div>
       </div>
@@ -727,7 +724,7 @@
     <!-- ============ CONNECT ============ -->
     <section id="connect" class="panel">
       <div class="eyebrow">Kết nối nền tảng</div>
-      <h2 class="sec-title">Theo dõi mình ở đây</h2>
+      <h2 class="sec-title">Theo dõi mình ở đây <span>· bấm vào icon hoặc tên để mở</span></h2>
       <div class="connect-grid">
         <a class="connect-card" href="https://open.spotify.com/user/31lrdp3h5dqn5bf5vdlad76u55wm?si=268dce55e4624bf8" target="_blank" rel="noopener" style="--icon-bg:#1ED760; --card-glow:radial-gradient(120px 90px at 50% 0%, rgba(30,215,96,.35), transparent 70%);">
           <div class="connect-icon"><svg viewBox="0 0 24 24" fill="#08110a"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0Zm5.52 17.34a.75.75 0 0 1-1.03.25c-2.82-1.72-6.36-2.11-10.54-1.16a.75.75 0 1 1-.33-1.46c4.58-1.04 8.5-.6 11.65 1.32.36.22.47.68.25 1.05Zm1.47-3.27a.94.94 0 0 1-1.29.31c-3.23-1.99-8.15-2.56-11.97-1.4a.94.94 0 1 1-.55-1.8c4.37-1.32 9.8-.68 13.5 1.6.44.27.58.85.31 1.29Zm.13-3.4C15.98 8.4 9.9 8.2 6.34 9.3a1.12 1.12 0 1 1-.66-2.15c4.1-1.25 10.9-1 15.15 1.55a1.13 1.13 0 0 1-1.71 1.47Z"/></svg></div>
@@ -751,7 +748,7 @@
     <!-- ============ SKILLS ============ -->
     <section id="skills" class="panel">
       <div class="eyebrow">Kỹ năng &amp; công cụ</div>
-      <h2 class="sec-title">Mình làm việc với</h2>
+      <h2 class="sec-title">Mình làm việc với <span>· ngôn ngữ, dữ liệu &amp; cách tiếp cận</span></h2>
 
       <div class="skill-groups">
         <div>
@@ -762,7 +759,7 @@
               <span>HTML5</span>
             </div>
             <div class="skill-chip" style="--skill-color:#2965F1;">
-              <svg class="skill-logo" viewBox="0 0 24 24" aria-hidden="true"><path fill="#264DE4" d="M3.5 2h17l-1.55 17.4L12 22 5.05 19.4 3.5 2Z"/><path fill="#fff" d="M12 4v2.3h6l-.2 2.2H12v2.2h5.55l-.55 6.1-5 1.55V16l2.9-.9.2-2.2H12V10.5h-4.2l-.25-2.2H12V6.3H7.3L7 4h5Z"/></svg>
+              <img class="skill-logo" src="https://cdn.simpleicons.org/css3/2965F1" alt="CSS3" loading="lazy">
               <span>CSS3</span>
             </div>
             <div class="skill-chip" style="--skill-color:#F0DB4F;">
@@ -807,7 +804,7 @@
     <!-- ============ PROJECTS ============ -->
     <section id="projects" class="panel">
       <div class="eyebrow">Các dự án của tôi</div>
-      <h2 class="sec-title">Xem trên GitHub </h2>
+      <h2 class="sec-title">Xem trên GitHub <span>· bấm vào ảnh hoặc tên để mở dự án</span></h2>
 
       <div class="projects-grid">
         <a class="project-card" href="https://github.com/Bynta123/eng-space" target="_blank" rel="noopener">
@@ -1053,46 +1050,39 @@ function renderCustomStatus(activities){
   }
 }
 
-fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
-  .then(r=>r.json())
-  .then(res=>{
-    if(res && res.success && res.data){
-      const u = res.data.discord_user || {};
-
-      if(u.avatar){
-        const ext = u.avatar.startsWith('a_') ? 'gif' : 'png';
-        avatarImg.src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${ext}?size=256`;
-      } else {
-        avatarImg.src = `https://cdn.discordapp.com/embed/avatars/${(u.discriminator || 0) % 5}.png`;
-      }
-
-      if(u.banner){
-        const bannerExt = u.banner.startsWith('a_') ? 'gif' : 'png';
-        bannerImg.src = `https://cdn.discordapp.com/banners/${u.id}/${u.banner}.${bannerExt}?size=600`;
-        bannerImg.classList.add('loaded');
-      } else if(MANUAL_BANNER_URL){
-        bannerImg.src = MANUAL_BANNER_URL;
-        bannerImg.classList.add('loaded');
-      } else if(u.accent_color !== undefined && u.accent_color !== null){
-        const hex = '#' + u.accent_color.toString(16).padStart(6,'0');
-        document.getElementById('banner').style.background = hex;
-      }
-
-      renderCustomStatus(res.data.activities);
-
-      usernameEl.textContent = '@' + (u.username || 'Bynta123');
-      const st = res.data.discord_status || 'offline';
-      statusDot.classList.remove('online','idle','dnd');
-      if(st==='online') statusDot.classList.add('online');
-      else if(st==='idle') statusDot.classList.add('idle');
-      else if(st==='dnd') statusDot.classList.add('dnd');
-    }
-  }).catch(()=>{
-    if(MANUAL_BANNER_URL){
-      bannerImg.src = MANUAL_BANNER_URL;
-      bannerImg.classList.add('loaded');
-    }
-  });
+function renderActivity(activities){
+  const a=(activities||[]).find(x=>x.type===0||x.type===1||x.type===2||x.type===3);
+  const box=document.getElementById('activityBox'), icon=document.getElementById('activityIcon'), name=document.getElementById('activityName'), details=document.getElementById('activityDetails');
+  if(!a){box.classList.remove('show');return;}
+  name.textContent=(a.type===0?'Đang chơi ':a.type===1?'Đang stream ':a.type===2?'Đang nghe ':'Đang xem ')+(a.name||'');
+  details.textContent=a.details||a.state||'';
+  let img='https://cdn.discordapp.com/embed/avatars/0.png';
+  const key=a.assets?.large_image||a.assets?.small_image;
+  if(key&&a.application_id){
+    if(key.startsWith('mp:external/')) img='https://media.discordapp.net/external/'+key.slice(12);
+    else img=`https://cdn.discordapp.com/app-assets/${a.application_id}/${key}.png`;
+  }
+  icon.src=img; box.classList.add('show');
+}
+function updateLanyard(data){
+  if(!data)return; const u=data.discord_user||{};
+  if(u.avatar){const ext=u.avatar.startsWith('a_')?'gif':'png';avatarImg.src=`https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${ext}?size=256`;}
+  else avatarImg.src=`https://cdn.discordapp.com/embed/avatars/${(u.discriminator||0)%5}.png`;
+  if(u.banner){const ext=u.banner.startsWith('a_')?'gif':'png';bannerImg.src=`https://cdn.discordapp.com/banners/${u.id}/${u.banner}.${ext}?size=600`;bannerImg.classList.add('loaded');}
+  else if(MANUAL_BANNER_URL){bannerImg.src=MANUAL_BANNER_URL;bannerImg.classList.add('loaded');}
+  usernameEl.textContent='@'+(u.username||'Bynta123');
+  const st=data.discord_status||'offline'; statusDot.classList.remove('online','idle','dnd'); if(st==='online')statusDot.classList.add('online'); else if(st==='idle')statusDot.classList.add('idle'); else if(st==='dnd')statusDot.classList.add('dnd');
+  renderCustomStatus(data.activities||[]); renderActivity(data.activities||[]);
+}
+fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`).then(r=>r.json()).then(x=>{if(x?.success)updateLanyard(x.data)}).catch(()=>{});
+let ls=null, hb=null, rt=null;
+function connectLanyard(){
+  clearTimeout(rt); ls=new WebSocket('wss://api.lanyard.rest/socket');
+  ls.onopen=()=>ls.send(JSON.stringify({op:2,d:{subscribe_to_id:DISCORD_ID}}));
+  ls.onmessage=e=>{let p;try{p=JSON.parse(e.data)}catch{return} if(p.op===1){clearInterval(hb);hb=setInterval(()=>{if(ls?.readyState===1)ls.send(JSON.stringify({op:3}))},p.d?.heartbeat_interval||30000)} if(p.t==='INIT_STATE'||p.t==='PRESENCE_UPDATE')updateLanyard(p.d)};
+  ls.onclose=()=>{clearInterval(hb);rt=setTimeout(connectLanyard,5000)}; ls.onerror=()=>{try{ls.close()}catch{}};
+}
+connectLanyard();
 
 fetch(`https://grux.audibert.dev/user/${DISCORD_ID}`)
   .then(r=>r.json())
@@ -1163,19 +1153,14 @@ const playlist = [
     title: 'Ta Có Nên',
     artist: 'Bray (B Ray) · Prod. Jurrivh',
     videoId: 'v_gttlXZTVI'
-  },
-
-  {
-    title: 'Ngồi Nghe Em Khóc',
-    artist: 'DatG',
-    videoId: 'xJ1uMrL9Rwo'
-  },
-  
-  {
-    title: 'Vì Điều Gì?',
-    artist: 'Thịnh suy',
-    videoId: 'BedCo7KEjWU'
   }
+
+  // Ví dụ thêm bài mới:
+  // ,{
+  //   title: 'Tên bài hát',
+  //   artist: 'Tên nghệ sĩ',
+  //   videoId: 'ID_VIDEO_YOUTUBE'
+  // }
 ];
 
 let currentSong = 0;
@@ -1230,7 +1215,7 @@ function renderPlaylist(){
     card.draggable = true;
     card.dataset.index = index;
     card.style.setProperty('--z', String(playlist.length - index));
-    card.style.setProperty('--stack-y', `${index * 8}px`);
+    card.style.setProperty('--stack-offset', `${Math.min(index * 0, 0)}px`);
 
     card.innerHTML = `
       <div class="song-index">${String(index + 1).padStart(2,'0')}</div>
@@ -1264,7 +1249,7 @@ function renderPlaylist(){
     card.addEventListener('dragover', (e)=>{
       e.preventDefault();
       if(dragIndex === null || dragIndex === index) return;
-      card.style.transform = `translateY(${index * 8 - 38}px) scale(1.02)`;
+      card.style.transform = 'translateX(12px) translateY(-5px) scale(1.02)';
     });
     card.addEventListener('dragleave', ()=>{
       if(!card.classList.contains('dragging')) card.style.transform = '';
@@ -1450,9 +1435,6 @@ document.body.appendChild(tag);
   }
   requestUpdate();
 })();
-
-/* STABLE NAV */
-(()=>{const l=[...document.querySelectorAll('.topnav a[data-nav]')],s=l.map(x=>document.querySelector(x.getAttribute('href'))).filter(Boolean);let lock=0;const set=id=>l.forEach(x=>x.classList.toggle('active',x.getAttribute('href')==='#'+id));const up=()=>{if(Date.now()<lock)return;let id=s[0]?.id,y=scrollY+125;s.forEach(x=>{if(x.offsetTop<=y)id=x.id});if(id)set(id)};l.forEach(x=>x.onclick=()=>{lock=Date.now()+700;set(x.getAttribute('href').slice(1));setTimeout(up,720)});addEventListener('scroll',up,{passive:true});addEventListener('resize',up);up()})();
 </script>
 </body>
 </html>
