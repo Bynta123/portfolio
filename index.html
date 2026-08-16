@@ -569,17 +569,18 @@
   @media (prefers-reduced-motion:reduce){
     *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
   }
-.activity-box{display:none;align-items:center;gap:10px;margin-top:10px;width:max-content;max-width:100%;padding:7px 11px 7px 7px;border:1px solid var(--panel-border);background:rgba(255,255,255,.035);border-radius:12px}.activity-box.show{display:flex}.activity-box>img{width:38px;height:38px;border-radius:9px;object-fit:cover;background:#11131a;flex:0 0 38px}.activity-info{min-width:0}.activity-name{font-size:12.5px;font-weight:700;color:var(--text)}.activity-details{margin-top:2px;font-size:11px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
 
-.activity-box{display:none;align-items:center;gap:9px;margin-top:8px;width:100%;max-width:300px;padding:7px 9px;border:1px solid var(--panel-border);background:rgba(255,255,255,.035);border-radius:11px}
+
+.activity-box{display:none;align-items:center;gap:10px;margin-top:10px;width:max-content;max-width:100%;padding:7px 11px 7px 7px;border:1px solid var(--panel-border);background:rgba(255,255,255,.035);border-radius:12px}
 .activity-box.show{display:flex}
-.activity-box>img{width:34px;height:34px;border-radius:8px;object-fit:cover;background:#11131a;flex:0 0 34px}
-.activity-info{min-width:0;flex:1}
-.activity-name{font-size:11.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.activity-details{margin-top:1px;font-size:10.5px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.activity-extra{margin-top:3px;font-size:10px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hero-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end}
-.hero-actions .activity-box{flex-basis:100%;margin-left:auto}
+.activity-box>img{width:38px;height:38px;border-radius:9px;object-fit:cover;background:#11131a;flex:0 0 38px}
+.activity-info{min-width:0}
+.activity-name{font-size:12.5px;font-weight:700;color:var(--text)}
+.activity-round{margin-top:2px;font-size:11.5px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:330px}
+.activity-meta{display:flex;align-items:center;gap:10px;margin-top:4px;font-size:10.5px;color:var(--text-faint);white-space:nowrap}
+.activity-meta span+span{padding-left:10px;border-left:1px solid var(--panel-border)}
+.activity-party::before{content:"👥";font-size:10px}
+.activity-playtime::before{content:"◷";font-size:11px}
 
 </style>
 </head>
@@ -640,7 +641,17 @@
         </div>
         <div class="badges-row" id="badgesRow"></div>
         <div class="custom-status" id="customStatus"></div>
-        <div class="activity-details" id="activityDetails"></div></div></div>
+        <div class="activity-box" id="activityBox">
+  <img id="activityIcon" src="" alt="">
+  <div class="activity-info">
+    <div class="activity-name" id="activityName"></div>
+    <div class="activity-round" id="activityRound"></div>
+    <div class="activity-meta" id="activityMeta">
+      <span class="activity-party" id="activityParty"></span>
+      <span class="activity-playtime" id="activityPlaytime"></span>
+    </div>
+  </div>
+</div>
       </div>
       <div class="hero-actions">
         <a class="icon-btn" href="https://github.com/Bynta123" target="_blank" rel="noopener" title="GitHub">
@@ -1061,22 +1072,58 @@ function renderCustomStatus(activities){
   }
 }
 
-function formatRemaining(ms){
-  if(!Number.isFinite(ms)||ms<=0)return '';
-  let sec=Math.ceil(ms/1000);
-  const h=Math.floor(sec/3600); sec%=3600;
-  const m=Math.floor(sec/60); const ss=sec%60;
-  if(h)return `${h} giờ ${String(m).padStart(2,'0')} phút`;
-  if(m)return `${m} phút ${String(ss).padStart(2,'0')} giây`;
-  return `${ss} giây`;
+let activityTimer = null;
+
+function formatElapsed(ms){
+  if(!Number.isFinite(ms) || ms < 0) return '0:00';
+  const total = Math.floor(ms / 1000);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  if(h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function getRoundText(a){
+  const text = [a.state, a.details].filter(Boolean).join(' · ');
+  const match = text.match(/(?:round|vòng)\s*[:#-]?\s*(\d+)/i);
+  if(match) return `Round ${match[1]}`;
+  if(a.state) return a.state;
+  if(a.details) return a.details;
+  return '';
 }
 
 function renderActivity(activities){
   const a=(activities||[]).find(x=>x.type===0||x.type===1||x.type===2||x.type===3);
-  const box=document.getElementById('activityBox'), icon=document.getElementById('activityIcon'), name=document.getElementById('activityName'), details=document.getElementById('activityDetails');
-  if(!a){box.classList.remove('show'); if(activityExtra)activityExtra.textContent=''; clearInterval(window.__activityCountdown); return;}
-  name.textContent=(a.type===0?'Đang chơi ':a.type===1?'Đang stream ':a.type===2?'Đang nghe ':'Đang xem ')+(a.name||'');
-  details.textContent=a.details||a.state||'';
+  const box=document.getElementById('activityBox');
+  const icon=document.getElementById('activityIcon');
+  const name=document.getElementById('activityName');
+  const round=document.getElementById('activityRound');
+  const meta=document.getElementById('activityMeta');
+  const party=document.getElementById('activityParty');
+  const playtime=document.getElementById('activityPlaytime');
+
+  clearInterval(activityTimer);
+
+  if(!a){
+    box.classList.remove('show');
+    round.textContent='';
+    meta.style.display='none';
+    party.textContent='';
+    playtime.textContent='';
+    return;
+  }
+
+  name.textContent=
+    (a.type===0?'Đang chơi ':
+     a.type===1?'Đang stream ':
+     a.type===2?'Đang nghe ':
+     'Đang xem ') + (a.name||'');
+
+  const roundText=getRoundText(a);
+  round.textContent=roundText;
+  round.style.display=roundText?'block':'none';
+
   let img='https://cdn.discordapp.com/embed/avatars/0.png';
   const key=a.assets?.large_image||a.assets?.small_image;
   if(key&&a.application_id){
@@ -1084,23 +1131,20 @@ function renderActivity(activities){
     else img=`https://cdn.discordapp.com/app-assets/${a.application_id}/${key}.png`;
   }
   icon.src=img;
-  icon.onerror=()=>{icon.src='https://cdn.discordapp.com/embed/avatars/0.png';};
 
   const size=a.party?.size;
-  const party=(Array.isArray(size)&&size.length>=2)?`${size[0]}/${size[1]} người trong team`:'';
-  const end=a.timestamps?.end;
-  function updateCountdown(){
-    const remain=end?formatRemaining(Number(end)-Date.now()):'';
-    const time=remain?`còn ${remain}`:'';
-    activityExtra.textContent=[party,time].filter(Boolean).join('  ·  ');
-    if(!remain&&end)clearInterval(window.__activityCountdown);
+  party.textContent=(Array.isArray(size)&&size.length>=2)?`${size[0]}/${size[1]} người`:'';
+
+  function updatePlaytime(){
+    const start=Number(a.timestamps?.start);
+    playtime.textContent=(start&&Number.isFinite(start))?formatElapsed(Date.now()-start):'';
+    meta.style.display=(party.textContent||playtime.textContent)?'flex':'none';
   }
-  clearInterval(window.__activityCountdown);
-  updateCountdown();
-  if(end)window.__activityCountdown=setInterval(updateCountdown,1000);
+
+  updatePlaytime();
+  if(a.timestamps?.start) activityTimer=setInterval(updatePlaytime,1000);
   box.classList.add('show');
 }
-
 function updateLanyard(data){
   if(!data)return; const u=data.discord_user||{};
   if(u.avatar){const ext=u.avatar.startsWith('a_')?'gif':'png';avatarImg.src=`https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${ext}?size=256`;}
