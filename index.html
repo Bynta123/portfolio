@@ -63,17 +63,45 @@
       radial-gradient(ellipse 640px 380px at 60% 30%, rgba(255,93,143,.06), transparent 65%);
   }
   .milky-way{
-    position:absolute; left:-20%; right:-20%; top:-10%; height:140%;
-    background:linear-gradient(115deg,
-      transparent 30%,
-      rgba(180,175,235,.05) 42%,
-      rgba(210,205,245,.09) 48%,
-      rgba(230,225,250,.1) 50%,
-      rgba(210,205,245,.09) 52%,
-      rgba(180,175,235,.05) 58%,
-      transparent 70%);
-    filter:blur(6px);
-    animation:milkyDrift 60s linear infinite alternate;
+    position:absolute; left:-25%; right:-25%; top:-15%; height:150%;
+    background:linear-gradient(112deg,
+      transparent 26%,
+      rgba(180,175,235,.06) 38%,
+      rgba(205,198,240,.12) 44%,
+      rgba(235,228,255,.16) 48%,
+      rgba(245,240,255,.19) 50%,
+      rgba(235,228,255,.16) 52%,
+      rgba(205,198,240,.12) 56%,
+      rgba(180,175,235,.06) 62%,
+      transparent 74%);
+    filter:blur(7px);
+    animation:milkyDrift 70s linear infinite alternate;
+    z-index:-1;
+  }
+  .milky-way::before{
+    content:'';
+    position:absolute; inset:0;
+    background:
+      radial-gradient(1.5px 1.5px at 30% 20%, rgba(255,255,255,.55), transparent),
+      radial-gradient(1.5px 1.5px at 45% 55%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 55% 30%, rgba(255,255,255,.45), transparent),
+      radial-gradient(1.5px 1.5px at 60% 65%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 40% 75%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1.5px 1.5px at 50% 42%, rgba(200,190,255,.6), transparent),
+      radial-gradient(1px 1px at 65% 25%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 35% 40%, rgba(255,255,255,.35), transparent);
+    background-repeat:repeat;
+    background-size:220px 220px;
+    mix-blend-mode:screen;
+    opacity:.7;
+  }
+  .milky-way-core{
+    position:absolute; left:50%; top:38%; width:520px; height:220px;
+    transform:translate(-50%,-50%) rotate(-25deg);
+    background:radial-gradient(ellipse at center, rgba(255,250,245,.14) 0%, rgba(220,205,255,.08) 40%, transparent 72%);
+    filter:blur(10px);
+    z-index:-1;
+    pointer-events:none;
   }
   @keyframes milkyDrift{0%{transform:translateX(0);} 100%{transform:translateX(-3%);}}
 
@@ -113,6 +141,30 @@
     content:''; position:absolute; top:50%; left:50%; width:64px; height:16px;
     border:2px solid rgba(130,245,225,.6); border-radius:50%;
     transform:translate(-50%,-50%); box-shadow:0 0 8px rgba(43,230,200,.3);
+  }
+
+  /* Hành tinh nhỏ thêm cho bầu trời đầy đặn hơn */
+  .planet-small-1{
+    position:absolute; top:14%; left:38%; width:16px; height:16px; border-radius:50%;
+    background:radial-gradient(circle at 32% 30%, #ff9fc0, #ff5d8f 65%, #a52d55 100%);
+    box-shadow:0 0 14px rgba(255,93,143,.35);
+  }
+  .planet-small-2{
+    position:absolute; top:68%; left:22%; width:22px; height:22px; border-radius:50%;
+    background:radial-gradient(circle at 30% 28%, #ffe19a, #e6a53c 60%, #7a5514 100%);
+    box-shadow:0 0 16px rgba(240,178,50,.3);
+  }
+  .planet-moonlet{
+    position:absolute; top:32%; left:75%; width:12px; height:12px; border-radius:50%;
+    background:radial-gradient(circle at 32% 30%, #cfd6ff, #8b93d9 70%, #4a5090 100%);
+    box-shadow:0 0 10px rgba(140,150,230,.35);
+  }
+  .planet-drift-1{ animation:planetFloat 16s ease-in-out infinite; }
+  .planet-drift-2{ animation:planetFloat 20s ease-in-out infinite reverse; }
+  .planet-drift-3{ animation:planetFloat 13s ease-in-out infinite; }
+  @keyframes planetFloat{
+    0%,100%{ transform:translateY(0) rotate(var(--rot,0deg)); }
+    50%{ transform:translateY(-10px) rotate(var(--rot,0deg)); }
   }
 
   #starsCanvas{position:absolute; inset:0; width:100%; height:100%;}
@@ -517,22 +569,46 @@
   .skill-chip .skill-logo{width:19px; height:19px; object-fit:contain; flex-shrink:0;}
   .playlist-wrap{margin-top:22px; display:grid; grid-template-columns:minmax(0,1fr); gap:12px;}
   .playlist-label{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.08em;}
-  .playlist{position:relative; min-height:74px; padding:4px 0 4px 0;}
+
+  /* Chồng sách: mặc định các bìa xếp đè lên nhau, đưa chuột vào để "rút" từng cuốn ra */
+  .playlist{position:relative; padding:6px 0 4px 26px;}
   .playlist-card{
-    position:relative; display:flex; align-items:center; gap:12px; width:calc(100% - var(--stack-offset, 0px));
-    min-height:66px; padding:10px 12px; border-radius:13px;
-    background:linear-gradient(135deg,rgba(17,20,30,.98),rgba(12,14,22,.98));
-    border:1px solid var(--panel-border); box-shadow:0 10px 25px -18px #000;
+    position:relative; display:flex; align-items:center; gap:12px; width:100%;
+    min-height:64px; padding:10px 14px 10px 20px; border-radius:11px 14px 14px 11px;
+    background:linear-gradient(135deg,rgba(19,22,32,.98),rgba(12,14,22,.98));
+    border:1px solid var(--panel-border); box-shadow:0 14px 26px -16px rgba(0,0,0,.75);
     cursor:grab; user-select:none; touch-action:none;
-    transform:translateX(var(--x,0)) translateY(var(--y,0)) scale(var(--scale,1));
-    transition:transform .42s var(--ease), border-color .25s, box-shadow .25s, opacity .25s;
-    z-index:var(--z,1); margin-bottom:-42px;
+    transform-origin:6% 50%;
+    transform:translateX(var(--x,0)) translateY(calc(var(--peek,0px) + var(--y,0px))) rotate(var(--rot,0deg)) scale(var(--scale,1));
+    transition:transform .48s var(--ease), border-color .3s, box-shadow .3s, opacity .25s;
+    z-index:var(--z,1); margin-bottom:-46px;
+    will-change:transform;
+  }
+  .playlist-card::before{
+    content:''; position:absolute; left:0; top:6%; bottom:6%; width:6px; border-radius:5px;
+    background:var(--spine, var(--grad));
+    box-shadow:1px 0 4px rgba(0,0,0,.4);
+  }
+  .playlist-card::after{
+    content:''; position:absolute; left:6px; top:0; bottom:0; width:14px;
+    background:linear-gradient(90deg, rgba(255,255,255,.06), transparent);
+    pointer-events:none;
   }
   .playlist-card:last-child{margin-bottom:0;}
-  .playlist-card:hover{--x:10px; border-color:rgba(124,108,255,.55); box-shadow:0 16px 30px -18px rgba(124,108,255,.4);}
-  .playlist-card.dragging{opacity:.88; cursor:grabbing; z-index:100; transform:translateX(18px) scale(1.025); border-color:var(--accent-b);}
-  .playlist-card.active{border-color:rgba(43,230,200,.55); box-shadow:0 0 0 1px rgba(43,230,200,.12),0 16px 30px -20px rgba(43,230,200,.25);}
-  .playlist-card .cover{width:46px;height:46px;border-radius:10px;object-fit:cover;flex:0 0 auto;background:#171a24;}
+
+  /* Đưa chuột vào cả chồng: các bìa tách ra như rút sách khỏi kệ */
+  .playlist:hover .playlist-card{--y:var(--fan-y, 0px); --rot:0deg;}
+
+  /* Đưa chuột vào từng bìa: kéo hẳn nó ra ngoài */
+  .playlist-card:hover{
+    --x:30px; --scale:1.02; --rot:0deg;
+    border-color:rgba(124,108,255,.55);
+    box-shadow:0 20px 40px -16px rgba(124,108,255,.45);
+    z-index:250;
+  }
+  .playlist-card.dragging{opacity:.88; cursor:grabbing; z-index:300; transform:translateX(34px) scale(1.03); border-color:var(--accent-b);}
+  .playlist-card.active{border-color:rgba(43,230,200,.55); box-shadow:0 0 0 1px rgba(43,230,200,.12),0 18px 34px -18px rgba(43,230,200,.3);}
+  .playlist-card .cover{width:44px;height:44px;border-radius:9px;object-fit:cover;flex:0 0 auto;background:#171a24;}
   .playlist-card .song-main{min-width:0;flex:1;}
   .playlist-card .song-title{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .playlist-card .song-artist{font-size:11.5px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
@@ -549,8 +625,8 @@
   .music-nav-btn svg{width:15px;height:15px;}
   .progress-click{cursor:pointer;}
   @media (max-width:720px){
-    .playlist-card{width:100%;}
-    .playlist-card:hover{--x:5px;}
+    .playlist{padding-left:16px;}
+    .playlist-card:hover{--x:14px;}
   }
 
   @media (max-width:720px){
@@ -611,11 +687,17 @@
 <div class="sky-bg">
   <div class="sky-glow"></div>
   <div class="milky-way"></div>
+  <div class="milky-way-core"></div>
   <div class="moon"></div>
-  
+
   <!-- Hành tinh có vành đai -->
   <div class="planet-ringed-1"></div>
   <div class="planet-ringed-2"></div>
+
+  <!-- Hành tinh nhỏ thêm -->
+  <div class="planet-small-1 planet-drift-1"></div>
+  <div class="planet-small-2 planet-drift-2"></div>
+  <div class="planet-moonlet planet-drift-3"></div>
 
   <canvas id="starsCanvas"></canvas>
 </div>
@@ -730,9 +812,9 @@
         </div>
       </div>
       <div class="playlist-wrap">
-        <div class="playlist-label">Playlist · kéo để đổi thứ tự</div>
+        <div class="playlist-label">Playlist · chồng như sách xếp</div>
         <div class="playlist" id="playlist"></div>
-        <div class="playlist-hint">↕ <span><b>Kéo một bài lên bài khác</b> để đổi vị trí.</span></div>
+        <div class="playlist-hint">📚 <span>Rê chuột vào chồng để <b>rút từng bài ra xem</b>, kéo một bài lên bài khác để đổi vị trí.</span></div>
       </div>
       <div id="yt-holder"><div id="yt-player"></div></div>
 
@@ -972,18 +1054,18 @@
   const STAR_COLORS = [[255,255,255],[255,255,255],[124,108,255],[43,230,200],[255,93,143]];
 
   function makeParticles(){
-    const count = window.innerWidth < 640 ? 90 : 170;
+    const count = window.innerWidth < 640 ? 100 : 190;
     particles = [];
     for(let i=0;i<count;i++){
-      const isBright = Math.random() < 0.12;
+      const isBright = Math.random() < 0.16;
       const c = STAR_COLORS[Math.floor(Math.random()*STAR_COLORS.length)];
       particles.push({
         x: Math.random()*w, y: Math.random()*h,
-        r: isBright ? Math.random()*1.1 + 1.2 : Math.random()*0.8 + 0.4,
+        r: isBright ? Math.random()*1.8 + 2 : Math.random()*1.3 + 0.7,
         bright: isBright, color: c,
         vx: (Math.random()-0.5) * 0.045, vy: (Math.random()-0.5) * 0.045,
         phase: Math.random()*Math.PI*2, speed: Math.random()*0.35 + 0.15,
-        minA: Math.random()*0.12, maxA: Math.random()*0.5 + 0.5
+        minA: Math.random()*0.15, maxA: Math.random()*0.5 + 0.55
       });
     }
   }
@@ -1002,6 +1084,16 @@
 
       const a = p.minA + (Math.sin(t*p.speed + p.phase)*0.5+0.5) * (p.maxA - p.minA);
       const [cr,cg,cb] = p.color;
+      if(p.bright){
+        ctx.beginPath();
+        const glowR = p.r * 3.2;
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+        grad.addColorStop(0, `rgba(${cr},${cg},${cb},${a*0.55})`);
+        grad.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
+        ctx.fillStyle = grad;
+        ctx.arc(p.x, p.y, glowR, 0, Math.PI*2);
+        ctx.fill();
+      }
       ctx.beginPath();
       ctx.fillStyle = `rgba(${cr},${cg},${cb},${a})`;
       ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
@@ -1291,6 +1383,14 @@ function updateMusicInfo(){
   progBarEl.style.width = '0%';
 }
 
+const SPINE_COLORS = [
+  'linear-gradient(180deg,#7c6cff,#5842e0)',
+  'linear-gradient(180deg,#2be6c8,#159e8a)',
+  'linear-gradient(180deg,#ff5d8f,#d13a68)',
+  'linear-gradient(180deg,#f0b232,#c98a12)',
+  'linear-gradient(180deg,#7c6cff,#2be6c8)'
+];
+
 function renderPlaylist(){
   playlistEl.innerHTML = '';
   if(!playlist.length){
@@ -1304,7 +1404,12 @@ function renderPlaylist(){
     card.draggable = true;
     card.dataset.index = index;
     card.style.setProperty('--z', String(playlist.length - index));
-    card.style.setProperty('--stack-offset', `${Math.min(index * 0, 0)}px`);
+    // Xếp mỗi bìa lệch nhẹ như một cuốn sách nằm hơi nghiêng trong chồng
+    const lean = (index % 2 === 0 ? -1 : 1) * (1.2 + (index % 3) * 0.5);
+    card.style.setProperty('--rot', `${lean}deg`);
+    // Khoảng cách khi rê chuột vào cả chồng để "rút" các bìa ra thành danh sách
+    card.style.setProperty('--fan-y', `${index * 58}px`);
+    card.style.setProperty('--spine', SPINE_COLORS[index % SPINE_COLORS.length]);
 
     card.innerHTML = `
       <div class="song-index">${String(index + 1).padStart(2,'0')}</div>
