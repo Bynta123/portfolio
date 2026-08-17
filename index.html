@@ -569,10 +569,10 @@
     position:absolute; left:50%; bottom:0;
     width:34vmax; height:150vmax; margin-left:-17vmax;
     transform-origin:50% 100%;
-    clip-path:polygon(0% 0%, 100% 0%, 86% 89%, 74% 95%, 60% 98%, 50% 99%, 40% 98%, 26% 95%, 14% 89%);
+    clip-path:polygon(50% 100%, 0% 0%, 100% 0%);
     background-image:var(--fan-ink-bg, none);
     background-attachment:fixed;
-    background-size:cover;
+    background-size:100vw 100vh;
     background-position:center;
     background-repeat:no-repeat;
     will-change:transform;
@@ -1604,12 +1604,39 @@ document.body.appendChild(tag);
 const fanTransition = (function(){
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Ảnh thuỷ mặc thật (kiếm khách trên sóng nước) dùng làm hoạ tiết cho các cánh quạt.
-  // Mỗi cánh quạt chỉ là một lát cắt hình nan quạt (không có cán), nền ảnh được
-  // gắn cố định theo màn hình (background-attachment:fixed) nên khi các nan xoè ra,
-  // chúng ghép lại đúng thành một bức tranh liền mạch.
-  const FAN_IMAGE_URL = 'https://i.pinimg.com/1200x/d9/a4/b2/d9a4b28dff8effcc2454b61b93e79afe.jpg';
-  document.documentElement.style.setProperty('--fan-ink-bg', `url("${FAN_IMAGE_URL}")`);
+  // Hoạ tiết thuỷ mặc: giấy dó ám vàng, núi mờ xa gần, trăng, cành trúc, chim, con dấu đỏ.
+  const inkSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f4e8c8"/>
+        <stop offset="1" stop-color="#e2c993"/>
+      </linearGradient>
+      <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f4e8c8" stop-opacity="0"/>
+        <stop offset="1" stop-color="#f4e8c8" stop-opacity="0.9"/>
+      </linearGradient>
+      <radialGradient id="moon" cx="50%" cy="50%" r="50%">
+        <stop offset="0" stop-color="#fffaea" stop-opacity="0.9"/>
+        <stop offset="1" stop-color="#fffaea" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <rect width="1600" height="900" fill="url(#paper)"/>
+    <circle cx="1300" cy="170" r="120" fill="url(#moon)"/>
+    <circle cx="1300" cy="170" r="46" fill="#fdf6e0" opacity="0.85"/>
+    <path d="M0,540 C220,455 380,510 560,450 C760,385 900,460 1080,420 C1260,385 1420,440 1600,400 L1600,900 L0,900 Z" fill="#8a94a6" opacity="0.16"/>
+    <path d="M0,630 C240,545 420,595 620,530 C820,460 980,545 1180,500 C1360,460 1480,520 1600,495 L1600,900 L0,900 Z" fill="#6b7690" opacity="0.22"/>
+    <path d="M0,745 C260,665 460,715 680,655 C880,600 1040,675 1240,635 C1400,605 1520,645 1600,625 L1600,900 L0,900 Z" fill="#3f485f" opacity="0.3"/>
+    <path d="M300,780 Q322,660 302,520" stroke="#2b2f38" stroke-width="7" fill="none" opacity="0.55" stroke-linecap="round"/>
+    <path d="M300,720 Q345,690 388,678 M300,640 Q256,610 214,604 M300,575 Q348,550 390,548 M300,500 Q262,472 224,468" stroke="#2b2f38" stroke-width="4" fill="none" opacity="0.42" stroke-linecap="round"/>
+    <path d="M1120,320 Q1140,235 1170,150" stroke="#2b2f38" stroke-width="6" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <path d="M1120,290 Q1085,262 1044,250 M1128,250 Q1096,218 1058,203 M1136,210 Q1108,182 1074,168" stroke="#2b2f38" stroke-width="4" fill="none" opacity="0.4" stroke-linecap="round"/>
+    <path d="M660,210 q14,-13 28,0 q14,-13 28,0" stroke="#2b2f38" stroke-width="3" fill="none" opacity="0.45" stroke-linecap="round"/>
+    <path d="M720,250 q13,-12 26,0 q13,-12 26,0" stroke="#2b2f38" stroke-width="3" fill="none" opacity="0.35" stroke-linecap="round"/>
+    <rect x="1478" y="742" width="64" height="64" rx="6" fill="#b8382f" opacity="0.88"/>
+    <rect x="1486" y="750" width="48" height="48" rx="3" fill="none" stroke="#f4e8c8" stroke-width="2" opacity="0.75"/>
+    <rect width="1600" height="900" fill="url(#mist)" opacity="0.4"/>
+  </svg>`;
+  document.documentElement.style.setProperty('--fan-ink-bg', `url("data:image/svg+xml,${encodeURIComponent(inkSVG)}")`);
 
   const N = 15;
   const overlay = document.createElement('div');
